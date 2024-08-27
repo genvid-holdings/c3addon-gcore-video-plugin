@@ -52,10 +52,8 @@
 	
 				const script = document.createElement("script");
 				script.src = scriptUrl;
-				
-				// Define what should happen once the script loads
+
 				script.onload = () => {
-					// Check if the library loaded correctly
 					if (window.GcorePlayer && window.GcorePlayer.gplayerAPI) {
 						// Initialize the player
 						this.gplayerAPI = new GcorePlayer.gplayerAPI(this.iframeElement);
