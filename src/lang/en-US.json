@@ -1,0 +1,55 @@
+﻿{
+	"$schema": "../../plugin.lang.schema.json",
+
+	"languageTag": "en-US",
+	"fileDescription": "Strings for Genvidtech_VideoPlayerPlugin2.",
+	"text": {
+		"plugins": {
+			"genvidtech_videoplayerplugin2": {
+				"name": "MyDOM",
+				"description": "Testing a custom DOM element third-party plugin.",
+				"help-url": "https://www.construct.net",
+				"properties": {
+				},
+				"aceCategories": {
+					"button": "Button"
+				},
+				"conditions": {
+					"on-click": {
+						"list-name": "On click",
+						"display-text": "On click",
+						"description": "Triggered when the button is clicked."
+					},
+					"is-playing": {
+						"list-name": "Is playing",
+						"display-text": "Is playing",
+						"description": "Whether the video player is playing or not"
+					},
+					"is-paused": {
+						"list-name": "Is paused",
+						"display-text": "Is paused",
+						"description": "Whether the video player is paused or not"
+					}
+				},
+				"actions": {
+					"play": {
+						"list-name": "Play",
+						"display-text": "Start playback",
+						"description": "Start playback"
+					},
+					"pause": {
+						"list-name": "Pause",
+						"display-text": "Pause playback",
+						"description": "Pause playback"
+					}
+				},
+				"expressions": {
+					"text": {
+						"description": "The button text.",
+						"translated-name": "Text"
+					}
+				}
+			}
+		}
+	}
+}

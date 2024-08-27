@@ -1,0 +1,207 @@
+{
+	"name": "VideoPlayerEvents",
+	"events": [
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "on-clicked",
+					"objectClass": "PlayButton",
+					"sid": 977493202006515
+				}
+			],
+			"actions": [
+				{
+					"id": "play",
+					"objectClass": "GenvidVideoPlayerPlugin2",
+					"sid": 434501289926565
+				}
+			],
+			"sid": 314610818946192
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "on-clicked",
+					"objectClass": "PauseButton",
+					"sid": 663858529088378
+				}
+			],
+			"actions": [
+				{
+					"id": "pause",
+					"objectClass": "GenvidVideoPlayerPlugin2",
+					"sid": 492364663632475
+				}
+			],
+			"sid": 907337095399152
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "on-clicked",
+					"objectClass": "GoButton",
+					"sid": 952955712264902
+				}
+			],
+			"actions": [
+				{
+					"id": "go-to-layout",
+					"objectClass": "System",
+					"sid": 494168637300629,
+					"parameters": {
+						"layout": "SecondLayout"
+					}
+				}
+			],
+			"sid": 786154362489404
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "is-playing",
+					"objectClass": "GenvidVideoPlayerPlugin2",
+					"sid": 987198503464702
+				},
+				{
+					"id": "trigger-once-while-true",
+					"objectClass": "System",
+					"sid": 611917788163895
+				}
+			],
+			"actions": [
+				{
+					"id": "set-text",
+					"objectClass": "PlayingText",
+					"sid": 596261110601408,
+					"parameters": {
+						"text": "\"Playing\""
+					}
+				}
+			],
+			"sid": 595682364731335
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "is-paused",
+					"objectClass": "GenvidVideoPlayerPlugin2",
+					"sid": 833255396605973
+				},
+				{
+					"id": "trigger-once-while-true",
+					"objectClass": "System",
+					"sid": 667037419730030
+				}
+			],
+			"actions": [
+				{
+					"id": "set-text",
+					"objectClass": "PlayingText",
+					"sid": 772895227672766,
+					"parameters": {
+						"text": "\"Paused\""
+					}
+				}
+			],
+			"sid": 594670553663304
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "on-clicked",
+					"objectClass": "LoadVideo1Button",
+					"sid": 573205148361884
+				}
+			],
+			"actions": [
+				{
+					"id": "navigate-url",
+					"objectClass": "iframe",
+					"sid": 622910180584140,
+					"parameters": {
+						"url": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
+					}
+				},
+				{
+					"id": "set-instvar-value",
+					"objectClass": "iframe",
+					"sid": 709510668614320,
+					"parameters": {
+						"instance-variable": "localURL",
+						"value": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
+					}
+				}
+			],
+			"sid": 777227045539481
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "on-clicked",
+					"objectClass": "LoadVideo2Button",
+					"sid": 155807121077954
+				}
+			],
+			"actions": [
+				{
+					"id": "navigate-url",
+					"objectClass": "iframe",
+					"sid": 275129531719359,
+					"parameters": {
+						"url": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\""
+					}
+				},
+				{
+					"id": "set-instvar-value",
+					"objectClass": "iframe",
+					"sid": 768497197377810,
+					"parameters": {
+						"instance-variable": "localURL",
+						"value": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\""
+					}
+				}
+			],
+			"sid": 791269820534351
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "on-start-of-layout",
+					"objectClass": "System",
+					"sid": 895841966592801
+				}
+			],
+			"actions": [
+				{
+					"id": "set-instvar-value",
+					"objectClass": "iframe",
+					"sid": 177653506893884,
+					"parameters": {
+						"instance-variable": "localURL",
+						"value": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
+					}
+				}
+			],
+			"sid": 950781538553525
+		},
+		{
+			"eventType": "variable",
+			"name": "updatedURL",
+			"type": "string",
+			"initialValue": "",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 118340508037039
+		}
+	],
+	"sid": 124371042630695
+}

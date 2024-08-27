@@ -1,0 +1,32 @@
+﻿{
+	"$schema": "../aces.schema.json",
+	
+	"button": {
+		"conditions": [
+			{
+				"id": "on-click",
+				"scriptName": "OnClick",
+				"isTrigger": true
+			},
+			{
+				"id": "is-playing",
+				"scriptName": "IsPlaying"
+			},
+			{
+				"id": "is-paused",
+				"scriptName": "IsPaused"
+			}
+		],
+		"actions": [
+			{
+				"id": "play",
+				"scriptName": "Play"
+			},
+			{
+				"id": "pause",
+				"scriptName": "Pause"
+			}
+		],
+		"expressions": []
+	}
+}

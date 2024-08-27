@@ -1,0 +1,27 @@
+{
+	"name": "SecondEvents",
+	"events": [
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "on-clicked",
+					"objectClass": "GoButton",
+					"sid": 648610871543496
+				}
+			],
+			"actions": [
+				{
+					"id": "go-to-layout",
+					"objectClass": "System",
+					"sid": 336063823954399,
+					"parameters": {
+						"layout": "MainLayout"
+					}
+				}
+			],
+			"sid": 604115982007686
+		}
+	],
+	"sid": 537586143730595
+}

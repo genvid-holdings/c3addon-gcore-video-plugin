@@ -1,0 +1,16 @@
+{
+	"name": "iframe",
+	"plugin-id": "iframe",
+	"sid": 518796646352984,
+	"isGlobal": false,
+	"instanceVariables": [
+		{
+			"name": "localURL",
+			"type": "string",
+			"desc": "",
+			"show": true,
+			"sid": 919484026026171
+		}
+	],
+	"behaviorTypes": []
+}
