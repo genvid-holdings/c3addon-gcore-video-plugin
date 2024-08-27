@@ -269,7 +269,14 @@
 		}
 	],
 	"sid": 232285377964416,
-	"nonworld-instances": [],
+	"nonworld-instances": [
+		{
+			"type": "MyDOM",
+			"properties": {},
+			"uid": 4,
+			"instanceVariables": {}
+		}
+	],
 	"effectTypes": [],
 	"width": 960,
 	"height": 1708,

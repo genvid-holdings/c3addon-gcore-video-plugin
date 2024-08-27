@@ -32,6 +32,11 @@
 					}
 				},
 				"actions": {
+					"load": {
+						"list-name": "Load",
+						"display-text": "Setup video player",
+						"description": "Setup video player"
+					},
 					"play": {
 						"list-name": "Play",
 						"display-text": "Start playback",

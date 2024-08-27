@@ -13,9 +13,7 @@ const PLUGIN_ID = "Genvidtech_VideoPlayerPlugin2";
 ////////////////////////////////////////////
 
 const PLUGIN_VERSION = "1.0.0.0";
-const PLUGIN_CATEGORY = "form-controls";	// The 'Form controls' category is recommended for DOM element plugins
-
-let app = null;
+const PLUGIN_CATEGORY = "general";
 
 const PLUGIN_CLASS = SDK.Plugins.Genvidtech_VideoPlayerPlugin2 = class MyDrawingPlugin extends SDK.IPluginBase
 {
@@ -29,10 +27,9 @@ const PLUGIN_CLASS = SDK.Plugins.Genvidtech_VideoPlayerPlugin2 = class MyDrawing
 		this._info.SetDescription(self.lang(".description"));
 		this._info.SetVersion(PLUGIN_VERSION);
 		this._info.SetCategory(PLUGIN_CATEGORY);
-		this._info.SetAuthor("Genvid Technologies");
+		this._info.SetAuthor("Genvid Technologies LLC");
 		this._info.SetHelpUrl(self.lang(".help-url"));
-		this._info.SetPluginType("world");			// mark as world plugin since it's placed in the layout
-		this._info.SetIsResizable(true);			// allow to be resized
+		// this._info.SetIsSingleGlobal(true);
 		
 		// Load domSide.js in the document context (main thread).
 		// This is important for supporting the runtime's web worker mode.
@@ -40,13 +37,7 @@ const PLUGIN_CLASS = SDK.Plugins.Genvidtech_VideoPlayerPlugin2 = class MyDrawing
 		
 		SDK.Lang.PushContext(".properties");
 		
-		// this._info.SetProperties([
-		// 	new SDK.PluginProperty("text", "button-text", "OK")
-		// ]);
-		
-		SDK.Lang.PopContext();		// .properties
-		
-		SDK.Lang.PopContext();
+		SDK.Lang.PopContext();	
 	}
 };
 

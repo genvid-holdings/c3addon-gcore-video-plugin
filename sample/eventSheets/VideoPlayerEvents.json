@@ -13,8 +13,8 @@
 			"actions": [
 				{
 					"id": "play",
-					"objectClass": "GenvidVideoPlayerPlugin2",
-					"sid": 434501289926565
+					"objectClass": "MyDOM",
+					"sid": 948880516590090
 				}
 			],
 			"sid": 314610818946192
@@ -31,8 +31,8 @@
 			"actions": [
 				{
 					"id": "pause",
-					"objectClass": "GenvidVideoPlayerPlugin2",
-					"sid": 492364663632475
+					"objectClass": "MyDOM",
+					"sid": 815251448354960
 				}
 			],
 			"sid": 907337095399152
@@ -63,8 +63,8 @@
 			"conditions": [
 				{
 					"id": "is-playing",
-					"objectClass": "GenvidVideoPlayerPlugin2",
-					"sid": 987198503464702
+					"objectClass": "MyDOM",
+					"sid": 909573857010186
 				},
 				{
 					"id": "trigger-once-while-true",
@@ -89,8 +89,8 @@
 			"conditions": [
 				{
 					"id": "is-paused",
-					"objectClass": "GenvidVideoPlayerPlugin2",
-					"sid": 833255396605973
+					"objectClass": "MyDOM",
+					"sid": 306948074379479
 				},
 				{
 					"id": "trigger-once-while-true",
@@ -188,19 +188,14 @@
 						"instance-variable": "localURL",
 						"value": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
 					}
+				},
+				{
+					"id": "load",
+					"objectClass": "MyDOM",
+					"sid": 479121990389559
 				}
 			],
 			"sid": 950781538553525
-		},
-		{
-			"eventType": "variable",
-			"name": "updatedURL",
-			"type": "string",
-			"initialValue": "",
-			"comment": "",
-			"isStatic": false,
-			"isConstant": false,
-			"sid": 118340508037039
 		}
 	],
 	"sid": 124371042630695

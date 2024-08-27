@@ -23,33 +23,34 @@
 		e.stopPropagation();
 	}
 
-	const HANDLER_CLASS = class MyDOMHandler extends self.DOMElementHandler
+	const HANDLER_CLASS = class MyDOMHandler extends self.DOMHandler
 	{
 		constructor(iRuntime)
 		{
 			super(iRuntime, DOM_COMPONENT_ID);
 
-			this.AddDOMElementMessageHandler("play", () =>
-				this._OnPlay()
-			);
+			this.AddRuntimeMessageHandlers([
+				["play",		e => this._OnPlay()],
+				["pause",		e => this._OnPause()],
+				["load",		e => this._OnLoad()]
+			]);
 
-			this.AddDOMElementMessageHandler("pause", () =>
-				this._OnPause()
-			);
-
-			this.AddDOMElementMessageHandler("dispose", () =>
-				this._OnDispose()
-			);
+			// this.AddRuntimeMessageHandlers("dispose", () =>
+			// 	this._OnDispose()
+			// );
 		}
 
-		CreateElement(elementId, e)
-		{
+		_OnLoad() {
 			this.iframeElement = document.getElementById("gplayer");
-			console.log("debug iframe", this.iframeElement)
-
 			if (this.iframeElement) {
+				const scriptUrl = "https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js";
+				const existingScript = document.querySelector(`script[src="${scriptUrl}"]`);
+				if (existingScript) {
+					document.body.removeChild(existingScript);
+				}
+	
 				const script = document.createElement("script");
-				script.src = "https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js";
+				script.src = scriptUrl;
 				
 				// Define what should happen once the script loads
 				script.onload = () => {
@@ -68,7 +69,7 @@
 					this.gplayerAPI.on('play', () => {  
 						console.log('[Event]', 'Playing')
 
-						this.PostToRuntimeElement("state-changed", elementId, {
+						this.PostToRuntime("state-changed", {
 							state: {
 							  playerState: "playing",
 							}
@@ -78,7 +79,7 @@
 					this.gplayerAPI.on('pause', () => {
 						console.log('[Event]', 'Paused')
 
-						this.PostToRuntimeElement("state-changed", elementId, {
+						this.PostToRuntime("state-changed", {
 							state: {
 							  playerState: "paused",
 							}
@@ -91,8 +92,6 @@
 			} else {
 				console.error("Iframe element not found");
 			}
-
-			return;
 		}
 
 		UpdateState(elem, e)

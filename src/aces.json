@@ -19,6 +19,10 @@
 		],
 		"actions": [
 			{
+				"id": "load",
+				"scriptName": "Load"
+			},
+			{
 				"id": "play",
 				"scriptName": "Play"
 			},

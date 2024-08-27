@@ -17,7 +17,7 @@
 			"type": "plugin",
 			"id": "Genvidtech_VideoPlayerPlugin2",
 			"name": "MyDOM",
-			"author": "Genvid Technologies",
+			"author": "Genvid Technologies LLC",
 			"bundled": false,
 			"version": "1.0.0.0"
 		},
@@ -41,12 +41,12 @@
 		"items": [
 			"iframe",
 			"PlayButton",
-			"GenvidVideoPlayerPlugin2",
 			"GoButton",
 			"PlayingText",
 			"PauseButton",
 			"LoadVideo2Button",
-			"LoadVideo1Button"
+			"LoadVideo1Button",
+			"MyDOM"
 		],
 		"subfolders": []
 	},
