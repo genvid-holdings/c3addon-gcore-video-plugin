@@ -127,15 +127,6 @@
 					"parameters": {
 						"url": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
 					}
-				},
-				{
-					"id": "set-instvar-value",
-					"objectClass": "iframe",
-					"sid": 709510668614320,
-					"parameters": {
-						"instance-variable": "localURL",
-						"value": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
-					}
 				}
 			],
 			"sid": 777227045539481
@@ -157,15 +148,6 @@
 					"parameters": {
 						"url": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\""
 					}
-				},
-				{
-					"id": "set-instvar-value",
-					"objectClass": "iframe",
-					"sid": 768497197377810,
-					"parameters": {
-						"instance-variable": "localURL",
-						"value": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\""
-					}
 				}
 			],
 			"sid": 791269820534351
@@ -180,15 +162,6 @@
 				}
 			],
 			"actions": [
-				{
-					"id": "set-instvar-value",
-					"objectClass": "iframe",
-					"sid": 177653506893884,
-					"parameters": {
-						"instance-variable": "localURL",
-						"value": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
-					}
-				},
 				{
 					"id": "load",
 					"objectClass": "MyDOM",

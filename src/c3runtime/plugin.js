@@ -2,7 +2,7 @@ const C3 = self.C3;
 
 // NOTE: use a unique DOM component ID to ensure it doesn't clash with anything else
 // This must also match the ID in instance.js and domSide.js.
-const DOM_COMPONENT_ID = "mycompany-mydomplugin";
+const DOM_COMPONENT_ID = "genvidtech-videoplayerplugin2";
 
 // NOTE: DOM plugins derive from C3.SDKDOMPluginBase, not C3.SDKPluginBase.
 C3.Plugins.Genvidtech_VideoPlayerPlugin2 = class MyDOMPlugin extends C3.SDKPluginBase

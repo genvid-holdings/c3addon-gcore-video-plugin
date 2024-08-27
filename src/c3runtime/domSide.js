@@ -16,7 +16,7 @@
 	
 	// NOTE: use a unique DOM component ID to ensure it doesn't clash with anything else
 	// This must also match the ID in instance.js and plugin.js.
-	const DOM_COMPONENT_ID = "mycompany-mydomplugin";
+	const DOM_COMPONENT_ID = "genvidtech-videoplayerplugin2";
 
 	function StopPropagation(e)
 	{
@@ -30,9 +30,9 @@
 			super(iRuntime, DOM_COMPONENT_ID);
 
 			this.AddRuntimeMessageHandlers([
-				["play",		e => this._OnPlay()],
-				["pause",		e => this._OnPause()],
-				["load",		e => this._OnLoad()]
+				["play", e => this._OnPlay()],
+				["pause", e => this._OnPause()],
+				["load", e => this._OnLoad()]
 			]);
 
 			// this.AddRuntimeMessageHandlers("dispose", () =>
@@ -42,6 +42,7 @@
 
 		_OnLoad() {
 			this.iframeElement = document.getElementById("gplayer");
+			console.log("debug iframe 1", this.iframeElement.contentWindow.postMessage)
 			if (this.iframeElement) {
 				const scriptUrl = "https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js";
 				const existingScript = document.querySelector(`script[src="${scriptUrl}"]`);
@@ -59,15 +60,15 @@
 						// Initialize the player
 						this.gplayerAPI = new GcorePlayer.gplayerAPI(this.iframeElement);
 					} else {
-						console.error("GcorePlayer or gplayerAPI not found");
+						console.error("[video player] GcorePlayer or gplayerAPI not found");
 					}
 
 					this.gplayerAPI.on('ready', () => {
-						console.log('[Event]', 'Ready')
+						console.log('[video player]', 'Ready')
 					})
 
-					this.gplayerAPI.on('play', () => {  
-						console.log('[Event]', 'Playing')
+					this.gplayerAPI.on('play', () => {
+						console.log('[video player]', 'Playing')
 
 						this.PostToRuntime("state-changed", {
 							state: {
@@ -77,7 +78,7 @@
 					})
 
 					this.gplayerAPI.on('pause', () => {
-						console.log('[Event]', 'Paused')
+						console.log('[video player]', 'Paused')
 
 						this.PostToRuntime("state-changed", {
 							state: {
@@ -90,7 +91,7 @@
 				// Append the script to the document body to initiate loading
 				document.body.appendChild(script);
 			} else {
-				console.error("Iframe element not found");
+				console.error("[video player] Iframe element not found");
 			}
 		}
 
@@ -106,10 +107,9 @@
 			this.gplayerAPI.method({ name: "pause" });
 		}
 
-		_OnDispose() {
-			this.gplayerAPI = null;
-			console.log("debug player on dispose", this.gplayerAPI)
-		}
+		// _OnDispose() {
+		// 	this.gplayerAPI = null;
+		// }
 	};
 	
 	self.RuntimeInterface.AddDOMHandlerClass(HANDLER_CLASS);

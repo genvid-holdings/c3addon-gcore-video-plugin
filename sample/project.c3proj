@@ -46,7 +46,8 @@
 			"PauseButton",
 			"LoadVideo2Button",
 			"LoadVideo1Button",
-			"MyDOM"
+			"MyDOM",
+			"iframe2"
 		],
 		"subfolders": []
 	},

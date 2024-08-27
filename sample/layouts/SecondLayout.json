@@ -23,10 +23,39 @@
 					"instanceVariables": {},
 					"behaviors": {},
 					"world": {
-						"x": 41,
-						"y": 26,
+						"x": 42,
+						"y": 530,
 						"width": 91,
 						"height": 40,
+						"originX": 0,
+						"originY": 0,
+						"color": [
+							1,
+							1,
+							1,
+							1
+						]
+					}
+				},
+				{
+					"type": "iframe2",
+					"properties": {
+						"url": "https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R",
+						"html": "",
+						"initially-visible": true,
+						"id": "",
+						"allow": "fullscreen; autoplay; encrypted-media",
+						"enable-sandbox": false,
+						"sandbox": "allow-scripts"
+					},
+					"uid": 11,
+					"instanceVariables": {},
+					"behaviors": {},
+					"world": {
+						"x": 32,
+						"y": 36,
+						"width": 300,
+						"height": 200,
 						"originX": 0,
 						"originY": 0,
 						"color": [

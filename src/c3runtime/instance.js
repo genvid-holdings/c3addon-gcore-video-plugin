@@ -2,7 +2,7 @@ const C3 = self.C3;
 
 // NOTE: use a unique DOM component ID to ensure it doesn't clash with anything else.
 // This must also match the ID in plugin.js and domSide.js.
-const DOM_COMPONENT_ID = "mycompany-mydomplugin";
+const DOM_COMPONENT_ID = "genvidtech-videoplayerplugin2";
 
 C3.Plugins.Genvidtech_VideoPlayerPlugin2.Instance = class MyDOMInstance extends C3.SDKInstanceBase
 {
@@ -12,6 +12,10 @@ C3.Plugins.Genvidtech_VideoPlayerPlugin2.Instance = class MyDOMInstance extends 
 
 		this._isPlaying = false;
 		this._isPaused = false;
+
+		this.AddDOMMessageHandlers([
+			["state-changed", e => this._OnStateChanged(e)]
+		]);
 	}
 	
 	Release()
@@ -21,7 +25,6 @@ C3.Plugins.Genvidtech_VideoPlayerPlugin2.Instance = class MyDOMInstance extends 
 	
 	_OnStateChanged(e) {
 		if (e.state) {
-		  // Check if player state has been updated
 		  switch (e.state.playerState) {
 			case "playing": {
 			  this._isPlaying = true;
