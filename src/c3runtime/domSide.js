@@ -35,63 +35,49 @@
 				["load", e => this._OnLoad()]
 			]);
 
-			// this.AddRuntimeMessageHandlers("dispose", () =>
-			// 	this._OnDispose()
-			// );
+			this.AddRuntimeMessageHandlers("dispose", () =>
+			  this._OnDispose()
+			);
 		}
 
 		_OnLoad() {
 			this.iframeElement = document.getElementById("gplayer");
 			console.log("debug iframe 1", this.iframeElement.contentWindow.postMessage)
 			if (this.iframeElement) {
-				const scriptUrl = "https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js";
-				const existingScript = document.querySelector(`script[src="${scriptUrl}"]`);
-				if (existingScript) {
-					document.body.removeChild(existingScript);
+				if (window.GcorePlayer && window.GcorePlayer.gplayerAPI) {
+					// Initialize the player
+					this.gplayerAPI = new GcorePlayer.gplayerAPI(this.iframeElement);
+				} else {
+					console.error("[video player] GcorePlayer or gplayerAPI not found");
 				}
-	
-				const script = document.createElement("script");
-				script.src = scriptUrl;
 
-				script.onload = () => {
-					if (window.GcorePlayer && window.GcorePlayer.gplayerAPI) {
-						// Initialize the player
-						this.gplayerAPI = new GcorePlayer.gplayerAPI(this.iframeElement);
-					} else {
-						console.error("[video player] GcorePlayer or gplayerAPI not found");
-					}
+				this.gplayerAPI.on('ready', () => {
+					console.log('[video player]', 'Ready')
+				})
 
-					this.gplayerAPI.on('ready', () => {
-						console.log('[video player]', 'Ready')
-					})
+				this.gplayerAPI.on('play', () => {
+					console.log('[video player]', 'Playing')
 
-					this.gplayerAPI.on('play', () => {
-						console.log('[video player]', 'Playing')
+					this.PostToRuntime("state-changed", {
+						state: {
+							playerState: "playing",
+						}
+						});
+				})
 
-						this.PostToRuntime("state-changed", {
-							state: {
-							  playerState: "playing",
-							}
-						  });
-					})
+				this.gplayerAPI.on('timeupdate', (e) => {
+					// console.log('[video player] timeupdate', e)
+				})
 
-					this.gplayerAPI.on('timeupdate', (e) => {
-						// console.log('[video player] timeupdate', e)
-					})
+				this.gplayerAPI.on('pause', () => {
+					console.log('[video player]', 'Paused')
 
-					this.gplayerAPI.on('pause', () => {
-						console.log('[video player]', 'Paused')
-
-						this.PostToRuntime("state-changed", {
-							state: {
-							  playerState: "paused",
-							}
-						  });
-					})
-				};
-
-				// Append the script to the document body to initiate loading
-				document.body.appendChild(script);
+					this.PostToRuntime("state-changed", {
+						state: {
+							playerState: "paused",
+						}
+						});
+				});
 			} else {
 				console.error("[video player] Iframe element not found");
 			}
@@ -109,9 +95,9 @@
 			this.gplayerAPI.method({ name: "pause" });
 		}
 
-		// _OnDispose() {
-		// 	this.gplayerAPI = null;
-		// }
+		_OnDispose() {
+			this.gplayerAPI = null;
+		}
 	};
 	
 	self.RuntimeInterface.AddDOMHandlerClass(HANDLER_CLASS);

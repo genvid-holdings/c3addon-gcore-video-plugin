@@ -28,6 +28,8 @@ const PLUGIN_CLASS = SDK.Plugins.Genvidtech_GCoreVideoPlugin = class GCoreVideoP
 		this._info.SetCategory(PLUGIN_CATEGORY);
 		this._info.SetAuthor("Genvid Technologies LLC");
 		this._info.SetHelpUrl(self.lang(".help-url"));
+
+		this._info.AddRemoteScriptDependency("https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js");
 		
 		// Load domSide.js in the document context (main thread).
 		// This is important for supporting the runtime's web worker mode.

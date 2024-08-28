@@ -1,7 +1,7 @@
 {
 	"projectFormatVersion": 1,
 	"savedWithRelease": 39700,
-	"name": "Genvid Video Player Plugin Sample",
+	"name": "Genvid GCore Video Plugin Sample",
 	"runtime": "c3",
 	"useWorker": "worker",
 	"bundleAddons": false,
@@ -174,12 +174,12 @@
 		"subfolders": []
 	},
 	"properties": {
-		"description": "Video player plugin sampel",
+		"description": "GCore Video Plugin Sample integration",
 		"version": "1.0.0.0",
-		"author": "",
-		"authorEmail": "",
-		"authorWebsite": "",
-		"appId": "com.genvid.burbank",
+		"author": "Genvid Technologies, LLC",
+		"authorEmail": "support@genvidtech.com",
+		"authorWebsite": "https://bitbucket.org/genvidtech/c3addon-gcore-video-plugin",
+		"appId": "com.genvid.gcoresample",
 		"pixelRounding": false,
 		"zAxisScale": "normalized",
 		"fov": 0.7853981633974483,

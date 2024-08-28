@@ -53,3 +53,4 @@ Thumbs.db
 
 # zip file
 *.c3addon
+ios/
