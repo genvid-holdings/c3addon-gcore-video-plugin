@@ -42,12 +42,29 @@
 			"iframe",
 			"PlayButton",
 			"GoButton",
-			"PlayingText",
+			"PlayerStateText",
 			"PauseButton",
 			"LoadVideo2Button",
 			"LoadVideo1Button",
 			"VideoPlayer",
-			"iframe2"
+			"iframe2",
+			"PlayerStateTextHeader",
+			"LoadingText",
+			"SkipButton",
+			"VolumeButton",
+			"MuteButton",
+			"UnmuteButton",
+			"AudioStateTextHeader",
+			"AudioStateText",
+			"PlaybackTimeText",
+			"DurationText",
+			"VolumeButton2",
+			"VolumeText",
+			"EnglishButton",
+			"NoSubButton",
+			"PlaybackTimeTextHeader",
+			"VolumeTextHeader",
+			"DurationTextHeader"
 		],
 		"subfolders": []
 	},
@@ -206,7 +223,7 @@
 			1,
 			0
 		],
-		"orientations": "portrait",
+		"orientations": "any",
 		"webgpu": "auto",
 		"gpuPreference": "high-performance",
 		"scriptsType": "module",
@@ -226,7 +243,7 @@
 		"exportFileStructure": "folders",
 		"uidAllocationMode": "increment"
 	},
-	"viewportWidth": 480,
-	"viewportHeight": 854,
+	"viewportWidth": 1000,
+	"viewportHeight": 1000,
 	"firstLayout": null
 }

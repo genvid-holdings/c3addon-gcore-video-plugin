@@ -1,11 +1,10 @@
 ﻿{
 	"$schema": "../SDK/plugin-sdk/v1/aces.schema.json",
-	
 	"media": {
 		"conditions": [
 			{
-				"id": "on-click",
-				"scriptName": "OnClick",
+				"id": "on-state-changed",
+				"scriptName": "OnStateChanged",
 				"isTrigger": true
 			},
 			{
@@ -15,12 +14,34 @@
 			{
 				"id": "is-paused",
 				"scriptName": "IsPaused"
+			},
+			{
+				"id": "is-ended",
+				"scriptName": "IsEnded"
+			},
+			{
+				"id": "is-muted",
+				"scriptName": "IsMuted"
+			},
+			{
+				"id": "is-loading",
+				"scriptName": "IsLoading"
+			},
+			{
+				"id": "is-ready",
+				"scriptName": "IsReady"
 			}
 		],
 		"actions": [
 			{
 				"id": "load",
-				"scriptName": "Load"
+				"scriptName": "Load",
+				"params": [
+					{
+						"id": "iframeId",
+						"type": "string"
+					}
+				]
 			},
 			{
 				"id": "play",
@@ -29,8 +50,59 @@
 			{
 				"id": "pause",
 				"scriptName": "Pause"
+			},
+			{
+				"id": "set-muted",
+				"scriptName": "SetMuted",
+				"params": [
+					{
+						"id": "mute",
+						"type": "boolean"
+					}
+				]
+			},
+			{
+				"id": "set-playback-time",
+				"scriptName": "SetPlaybackTime",
+				"params": [
+					{
+						"id": "playback-time",
+						"type": "number"
+					}
+				]
+			},
+			{
+				"id": "set-volume",
+				"scriptName": "SetVolume",
+				"params": [
+					{
+						"id": "level",
+						"type": "number"
+					}
+				]
 			}
 		],
-		"expressions": []
+		"expressions": [
+			{
+				"id": "state",
+				"expressionName": "State",
+				"returnType": "string"
+			},
+			{
+				"id": "get-current-playback-time",
+				"expressionName": "GetCurrentPlaybackTime",
+				"returnType": "number"
+			},
+			{
+				"id": "get-current-volume",
+				"expressionName": "GetCurrentVolume",
+				"returnType": "number"
+			},
+			{
+				"id": "get-duration",
+				"expressionName": "GetDuration",
+				"returnType": "number"
+			}
+		]
 	}
 }

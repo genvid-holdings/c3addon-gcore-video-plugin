@@ -18,31 +18,26 @@
 	// This must also match the ID in instance.js and plugin.js.
 	const DOM_COMPONENT_ID = "genvidtech-gcorevideoplugin";
 
-	function StopPropagation(e)
-	{
-		e.stopPropagation();
-	}
-
-	const HANDLER_CLASS = class GCoreVideoDOMHandler extends self.DOMHandler
-	{
-		constructor(iRuntime)
-		{
+	const HANDLER_CLASS = class GCoreVideoDOMHandler extends self.DOMHandler {
+		constructor(iRuntime) {
 			super(iRuntime, DOM_COMPONENT_ID);
 
 			this.AddRuntimeMessageHandlers([
+				["load", e => this._OnLoad(e)],
 				["play", e => this._OnPlay()],
 				["pause", e => this._OnPause()],
-				["load", e => this._OnLoad()]
+				["mute", e => this._OnMute()],
+				["unmute", e => this._OnUnmute()],
+				["getDuration", e => this._OnGetDuration()],
+				["getVolume", e => this._OnGetVolume()],
+				["seek", e => this._OnSeek(e)],
+				["setVolume", e => this._OnSetVolume(e)],
+				["dispose", e => this._OnDispose()]
 			]);
-
-			this.AddRuntimeMessageHandlers("dispose", () =>
-			  this._OnDispose()
-			);
 		}
 
-		_OnLoad() {
-			this.iframeElement = document.getElementById("gplayer");
-			console.log("debug iframe 1", this.iframeElement.contentWindow.postMessage)
+		_OnLoad(iframeId) {
+			this.iframeElement = document.getElementById(iframeId);
 			if (this.iframeElement) {
 				if (window.GcorePlayer && window.GcorePlayer.gplayerAPI) {
 					// Initialize the player
@@ -51,40 +46,112 @@
 					console.error("[video player] GcorePlayer or gplayerAPI not found");
 				}
 
-				this.gplayerAPI.on('ready', () => {
-					console.log('[video player]', 'Ready')
-				})
+				// Adding event listener to listen to Gcore method call event
+				// FIXME: Gcore API should have a way to handle this
+				window.addEventListener("message", this.handleGcoreMethodMessages.bind(this));
 
-				this.gplayerAPI.on('play', () => {
-					console.log('[video player]', 'Playing')
+				this.gplayerAPI.on("ready", () => {
+					console.log("[video player]", "Ready");
+
+					this.PostToRuntime("state-changed", {
+						state: {
+							playerState: "ready",
+						}
+					});
+				})
+				this.gplayerAPI.on("play", () => {
+					console.log("[video player]", "Playing");
 
 					this.PostToRuntime("state-changed", {
 						state: {
 							playerState: "playing",
 						}
-						});
+					});
 				})
-
-				this.gplayerAPI.on('timeupdate', (e) => {
-					// console.log('[video player] timeupdate', e)
-				})
-
-				this.gplayerAPI.on('pause', () => {
-					console.log('[video player]', 'Paused')
+				this.gplayerAPI.on("pause", () => {;
+					console.log("[video player]", "Paused")
 
 					this.PostToRuntime("state-changed", {
 						state: {
 							playerState: "paused",
 						}
-						});
+					});
 				});
+				this.gplayerAPI.on("timeupdate", (e) => {
+					this.PostToRuntime("state-changed", {
+						state: {
+							currentPlaybackTime: e.current,
+						}
+					});
+				})
+				this.gplayerAPI.on("volumeupdate", (e) => {
+					console.log("[video player] Volume updated", e);
+
+					this.PostToRuntime("state-changed", {
+						state: {
+							currentVolume: e,
+						}
+					});
+				})
+				this.gplayerAPI.on("ended", () => {
+					console.log("[video player]", "Ended");
+
+					this.PostToRuntime("state-changed", {
+						state: {
+							playerState: "ended",
+						}
+					});
+				})
+
 			} else {
 				console.error("[video player] Iframe element not found");
 			}
 		}
 
-		UpdateState(elem, e)
-		{
+		handleGcoreMethodMessages(event) {
+			if (event.data.method) {
+				switch (event.data.method) {
+					case "mute":
+						console.log("[video player]", "Muted");
+
+						this.PostToRuntime("state-changed", {
+							state: {
+								audioState: "muted",
+							}
+						});
+						break;
+					case "unmute":
+						console.log("[video player]", "Unmuted");
+
+						this.PostToRuntime("state-changed", {
+							state: {
+								audioState: "unmuted",
+							}
+						});
+						break;
+					case "getVolume":
+						console.log("[video player] Current volume", event.data.res);
+
+						this.PostToRuntime("state-changed", {
+							state: {
+								currentVolume: event.data.res,
+							}
+						});
+						break;
+					case "getDuration":
+						console.log("[video player] Duration", event.data.res);
+
+						this.PostToRuntime("state-changed", {
+							state: {
+								duration: event.data.res,
+							}
+						});
+						break;
+				}
+			}
+		}
+
+		UpdateState(elem, e) {
 		}
 
 		_OnPlay() {
@@ -95,7 +162,48 @@
 			this.gplayerAPI.method({ name: "pause" });
 		}
 
+		_OnSeek(state) {
+			console.log("[video player] Seek requested", state.requestedPlaybackTime);
+			if (state.requestedPlaybackTime) {
+				this.gplayerAPI.method({
+					name: "seek",
+					params: state.requestedPlaybackTime
+				});
+			}
+		}
+
+		_OnSetVolume(state) {
+			console.log("[video player] Set volume requested", state.requestedVolume);
+			if (state.requestedVolume) {
+				this.gplayerAPI.method({
+					name: "setVolume",
+					params: state.requestedVolume
+				});
+			}
+		}
+
+		_OnMute() {
+			console.log("[video player]", "Mute requested");
+			this.gplayerAPI.method({ name: "mute" });
+		}
+		
+		_OnUnmute() {
+			console.log("[video player]", "Unmute requested");
+			this.gplayerAPI.method({ name: "unmute" });
+		}
+
+		_OnGetDuration() {
+			console.log("[video player]", "Current duration requested");
+			this.gplayerAPI.method({ name: "getDuration" });
+		}
+		
+		_OnGetVolume() {
+			console.log("[video player]", "Current volume requested");
+			this.gplayerAPI.method({ name: "getVolume" });
+		}
+
 		_OnDispose() {
+			window.removeEventListener("message", this.handleGcoreMethodMessages.bind(this));
 			this.gplayerAPI = null;
 		}
 	};

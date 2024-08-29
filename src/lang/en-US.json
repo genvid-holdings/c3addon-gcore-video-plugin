@@ -15,10 +15,10 @@
 					"media": "Media"
 				},
 				"conditions": {
-					"on-click": {
-						"list-name": "On click",
-						"display-text": "On click",
-						"description": "Triggered when the button is clicked."
+					"on-state-changed": {
+						"list-name": "On state changed",
+						"display-text": "On state changed",
+						"description": "Triggered when the video player state has changed."
 					},
 					"is-playing": {
 						"list-name": "Is playing",
@@ -29,29 +29,100 @@
 						"list-name": "Is paused",
 						"display-text": "Is paused",
 						"description": "Whether the video player is paused or not"
+					},
+					"is-ended": {
+						"list-name": "Is ended",
+						"display-text": "Is ended",
+						"description": "Whether the video player is ended or not"
+					},
+					"is-muted": {
+						"list-name": "Is muted",
+						"display-text": "Is muted",
+						"description": "Whether the video player is muted or not"
+					},
+					"is-loading": {
+						"list-name": "Is loading",
+						"display-text": "Is loading",
+						"description": "Whether the video player is loading or not"
+					},
+					"is-ready": {
+						"list-name": "Is ready",
+						"display-text": "Is ready",
+						"description": "Whether the video player is ready or not"
 					}
 				},
 				"actions": {
 					"load": {
 						"list-name": "Load",
-						"display-text": "Setup video player",
-						"description": "Setup video player"
+						"display-text": "Setup video player for iframe {0}",
+						"description": "Setup video player for iframe {0}",
+						"params": {
+							"iframeId": {
+								"name": "iframeId",
+								"desc": "iframe ID"
+							}
+						}
 					},
 					"play": {
 						"list-name": "Play",
-						"display-text": "Start playback",
-						"description": "Start playback"
+						"display-text": "Starts the playback",
+						"description": "Starts the playback"
 					},
 					"pause": {
 						"list-name": "Pause",
-						"display-text": "Pause playback",
-						"description": "Pause playback"
+						"display-text": "Stops the playback",
+						"description": "Stops the playback"
+					},
+					"set-muted": {
+						"list-name": "Set muted",
+						"display-text": "Mute state of the video player is set to {0}",
+						"description": "Mute/Unmute the video player instance",
+						"params": {
+							"mute": {
+								"name": "mute",
+								"desc": "Mute state of the video player. True will mute the player."
+							}
+						}
+					},
+					"set-playback-time": {
+						"list-name": "Set playback time",
+						"display-text": "Sets the playback time of the video player to {0}",
+						"description": "Sets the playback time to be played.",
+						"params": {
+							"playback-time": {
+								"name": "playbackTime",
+								"desc": "The playback time to be specified."
+							}
+						}
+					},
+					"set-volume": {
+						"list-name": "Set Volume",
+						"display-text": "Sets the video player volume level to {0}",
+						"description": "Sets the video player instance volume.",
+						"params": {
+							"level": {
+								"name": "Level",
+								"desc": "The volume level between 0 and 1"
+							}
+						}
 					}
 				},
 				"expressions": {
-					"text": {
-						"description": "The button text.",
-						"translated-name": "Text"
+					"state": {
+						"description": "The state of the video player.",
+						"translated-name": "State"
+					},
+					"get-current-playback-time": {
+						"description": "The current playback time of the video player.",
+						"translated-name": "GetCurrentPlaybackTime"
+					},
+					"get-current-volume": {
+						"description": "The current volume of the video player.",
+						"translated-name": "GetCurrentVolume"
+					},
+					"get-duration": {
+						"description": "The duration of the video.",
+						"translated-name": "GetDuration"
 					}
 				}
 			}

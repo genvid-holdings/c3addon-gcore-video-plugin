@@ -1,7 +1,7 @@
 {
-	"name": "NoSubButton",
+	"name": "SkipButton",
 	"plugin-id": "Button",
-	"sid": 545256381978048,
+	"sid": 707357363251945,
 	"isGlobal": false,
 	"instanceVariables": [],
 	"behaviorTypes": []

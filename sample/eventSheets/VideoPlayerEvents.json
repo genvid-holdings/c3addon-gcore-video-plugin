@@ -2,173 +2,602 @@
 	"name": "VideoPlayerEvents",
 	"events": [
 		{
-			"eventType": "block",
-			"conditions": [
-				{
-					"id": "on-clicked",
-					"objectClass": "PlayButton",
-					"sid": 977493202006515
-				}
-			],
-			"actions": [
-				{
-					"id": "play",
-					"objectClass": "VideoPlayer",
-					"sid": 948880516590090
-				}
-			],
-			"sid": 314610818946192
+			"eventType": "variable",
+			"name": "url",
+			"type": "string",
+			"initialValue": "",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 618282750089591
 		},
 		{
-			"eventType": "block",
-			"conditions": [
+			"eventType": "group",
+			"disabled": false,
+			"title": "Video state",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
 				{
-					"id": "on-clicked",
-					"objectClass": "PauseButton",
-					"sid": 663858529088378
-				}
-			],
-			"actions": [
-				{
-					"id": "pause",
-					"objectClass": "VideoPlayer",
-					"sid": 815251448354960
-				}
-			],
-			"sid": 907337095399152
-		},
-		{
-			"eventType": "block",
-			"conditions": [
-				{
-					"id": "on-clicked",
-					"objectClass": "GoButton",
-					"sid": 952955712264902
-				}
-			],
-			"actions": [
-				{
-					"id": "go-to-layout",
-					"objectClass": "System",
-					"sid": 494168637300629,
-					"parameters": {
-						"layout": "SecondLayout"
-					}
-				}
-			],
-			"sid": 786154362489404
-		},
-		{
-			"eventType": "block",
-			"conditions": [
-				{
-					"id": "is-playing",
-					"objectClass": "VideoPlayer",
-					"sid": 909573857010186
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-start-of-layout",
+							"objectClass": "System",
+							"sid": 550019137474034
+						}
+					],
+					"actions": [
+						{
+							"id": "set-visible",
+							"objectClass": "iframe",
+							"sid": 273788108104968,
+							"parameters": {
+								"visibility": "invisible"
+							}
+						},
+						{
+							"id": "load",
+							"objectClass": "VideoPlayer",
+							"sid": 985340206325556,
+							"parameters": {
+								"iframeId": "\"gplayer\""
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 297288380609112,
+							"parameters": {
+								"variable": "url",
+								"value": "iframe.localURL"
+							}
+						}
+					],
+					"sid": 817217549178587
 				},
 				{
-					"id": "trigger-once-while-true",
-					"objectClass": "System",
-					"sid": 611917788163895
-				}
-			],
-			"actions": [
-				{
-					"id": "set-text",
-					"objectClass": "PlayingText",
-					"sid": 596261110601408,
-					"parameters": {
-						"text": "\"Playing\""
-					}
-				}
-			],
-			"sid": 595682364731335
-		},
-		{
-			"eventType": "block",
-			"conditions": [
-				{
-					"id": "is-paused",
-					"objectClass": "VideoPlayer",
-					"sid": 306948074379479
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "is-loading",
+							"objectClass": "VideoPlayer",
+							"sid": 508554559047798
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 204424756120213
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "PlayerStateText",
+							"sid": 752090220114647,
+							"parameters": {
+								"text": "\"Loading\""
+							}
+						}
+					],
+					"sid": 143670957086949
 				},
 				{
-					"id": "trigger-once-while-true",
-					"objectClass": "System",
-					"sid": 667037419730030
-				}
-			],
-			"actions": [
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "is-ready",
+							"objectClass": "VideoPlayer",
+							"sid": 752277306131849
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 620075387048187
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "PlayerStateText",
+							"sid": 933471033134315,
+							"parameters": {
+								"text": "\"Ready\""
+							}
+						},
+						{
+							"id": "set-text",
+							"objectClass": "DurationText",
+							"sid": 857222396810717,
+							"parameters": {
+								"text": "VideoPlayer.GetDuration"
+							}
+						},
+						{
+							"id": "set-text",
+							"objectClass": "VolumeText",
+							"sid": 967322932514696,
+							"parameters": {
+								"text": "VideoPlayer.GetCurrentVolume"
+							}
+						},
+						{
+							"id": "set-visible",
+							"objectClass": "iframe",
+							"sid": 851637187463200,
+							"parameters": {
+								"visibility": "visible"
+							}
+						}
+					],
+					"sid": 886817470416088
+				},
 				{
-					"id": "set-text",
-					"objectClass": "PlayingText",
-					"sid": 772895227672766,
-					"parameters": {
-						"text": "\"Paused\""
-					}
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "is-playing",
+							"objectClass": "VideoPlayer",
+							"sid": 483602874289203
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 732103614292212
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "PlayerStateText",
+							"sid": 211568381809580,
+							"parameters": {
+								"text": "\"Playing\""
+							}
+						}
+					],
+					"sid": 865792295479756
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "is-paused",
+							"objectClass": "VideoPlayer",
+							"sid": 954118762140358
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 485841306480982
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "PlayerStateText",
+							"sid": 683150479842944,
+							"parameters": {
+								"text": "\"Paused\""
+							}
+						}
+					],
+					"sid": 520422147026647
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "is-ended",
+							"objectClass": "VideoPlayer",
+							"sid": 608885052847793
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 623660250096806
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "PlayerStateText",
+							"sid": 954542867760444,
+							"parameters": {
+								"text": "\"Ended\""
+							}
+						}
+					],
+					"sid": 533792403953503
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "is-muted",
+							"objectClass": "VideoPlayer",
+							"sid": 602940089000310
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 313779828110383
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "AudioStateText",
+							"sid": 573615575745293,
+							"parameters": {
+								"text": "\"Muted\""
+							}
+						}
+					],
+					"sid": 439268442049821
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "is-muted",
+							"objectClass": "VideoPlayer",
+							"sid": 493882032032967,
+							"isInverted": true
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 550891237647332
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "AudioStateText",
+							"sid": 624249867045121,
+							"parameters": {
+								"text": "\"Unmuted\""
+							}
+						}
+					],
+					"sid": 236740026197500
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-state-changed",
+							"objectClass": "VideoPlayer",
+							"sid": 750399817155581
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "PlaybackTimeText",
+							"sid": 819938601487645,
+							"parameters": {
+								"text": "VideoPlayer.GetCurrentPlaybackTime"
+							}
+						},
+						{
+							"id": "set-text",
+							"objectClass": "VolumeText",
+							"sid": 910824907663023,
+							"parameters": {
+								"text": "VideoPlayer.GetCurrentVolume"
+							}
+						}
+					],
+					"sid": 344835701023923
 				}
 			],
-			"sid": 594670553663304
+			"sid": 787197576674853
 		},
 		{
-			"eventType": "block",
-			"conditions": [
+			"eventType": "group",
+			"disabled": false,
+			"title": "Video UI",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
 				{
-					"id": "on-clicked",
-					"objectClass": "LoadVideo1Button",
-					"sid": 573205148361884
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "PlayButton",
+							"sid": 487336247927899
+						}
+					],
+					"actions": [
+						{
+							"id": "play",
+							"objectClass": "VideoPlayer",
+							"sid": 487005626183407
+						}
+					],
+					"sid": 846150333875676
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "PauseButton",
+							"sid": 812130693622638
+						}
+					],
+					"actions": [
+						{
+							"id": "pause",
+							"objectClass": "VideoPlayer",
+							"sid": 350305340319937
+						}
+					],
+					"sid": 678748562415434
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "GoButton",
+							"sid": 644437730765243
+						}
+					],
+					"actions": [
+						{
+							"id": "go-to-layout",
+							"objectClass": "System",
+							"sid": 337965114161395,
+							"parameters": {
+								"layout": "SecondLayout"
+							}
+						}
+					],
+					"sid": 125392815096367
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "LoadVideo1Button",
+							"sid": 965902927047914
+						}
+					],
+					"actions": [
+						{
+							"id": "set-visible",
+							"objectClass": "iframe",
+							"sid": 205226572040313,
+							"parameters": {
+								"visibility": "invisible"
+							}
+						},
+						{
+							"id": "navigate-url",
+							"objectClass": "iframe",
+							"sid": 916858517008746,
+							"parameters": {
+								"url": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
+							}
+						},
+						{
+							"id": "set-instvar-value",
+							"objectClass": "iframe",
+							"sid": 987441784954972,
+							"parameters": {
+								"instance-variable": "localURL",
+								"value": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
+							}
+						}
+					],
+					"sid": 743415191310776
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "LoadVideo2Button",
+							"sid": 233713691299178
+						}
+					],
+					"actions": [
+						{
+							"id": "set-visible",
+							"objectClass": "iframe",
+							"sid": 250364144434223,
+							"parameters": {
+								"visibility": "invisible"
+							}
+						},
+						{
+							"id": "navigate-url",
+							"objectClass": "iframe",
+							"sid": 807744104130543,
+							"parameters": {
+								"url": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\""
+							}
+						},
+						{
+							"id": "set-instvar-value",
+							"objectClass": "iframe",
+							"sid": 751111633077710,
+							"parameters": {
+								"instance-variable": "localURL",
+								"value": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\""
+							}
+						}
+					],
+					"sid": 286520333457171
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "SkipButton",
+							"sid": 397106588125968
+						}
+					],
+					"actions": [
+						{
+							"id": "set-playback-time",
+							"objectClass": "VideoPlayer",
+							"sid": 217642319388477,
+							"parameters": {
+								"playback-time": "30"
+							}
+						}
+					],
+					"sid": 787029269627915
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "VolumeButton",
+							"sid": 949164029792820
+						}
+					],
+					"actions": [
+						{
+							"id": "set-volume",
+							"objectClass": "VideoPlayer",
+							"sid": 330329780513761,
+							"parameters": {
+								"level": "50"
+							}
+						}
+					],
+					"sid": 741610589997215
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "VolumeButton2",
+							"sid": 913012596429421
+						}
+					],
+					"actions": [
+						{
+							"id": "set-volume",
+							"objectClass": "VideoPlayer",
+							"sid": 811512415488942,
+							"parameters": {
+								"level": "100"
+							}
+						}
+					],
+					"sid": 464640459957715
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "MuteButton",
+							"sid": 406378681138875
+						}
+					],
+					"actions": [
+						{
+							"id": "set-muted",
+							"objectClass": "VideoPlayer",
+							"sid": 315093480918435,
+							"parameters": {
+								"mute": true
+							}
+						}
+					],
+					"sid": 262535182203118
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "UnmuteButton",
+							"sid": 684133469643834
+						}
+					],
+					"actions": [
+						{
+							"id": "set-muted",
+							"objectClass": "VideoPlayer",
+							"sid": 834524676649778,
+							"parameters": {
+								"mute": false
+							}
+						}
+					],
+					"sid": 816317787308067
+				},
+				{
+					"eventType": "variable",
+					"name": "targetURL",
+					"type": "string",
+					"initialValue": "",
+					"comment": "",
+					"isStatic": true,
+					"isConstant": false,
+					"sid": 151909311512441
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "EnglishButton",
+							"sid": 936820827566704
+						}
+					],
+					"actions": [
+						{
+							"type": "script",
+							"script": "localVars.targetURL = runtime.objects.iframe.getFirstInstance().instVars.localURL + \"?sub_lang=en\";"
+						},
+						{
+							"id": "navigate-url",
+							"objectClass": "iframe",
+							"sid": 864690090226753,
+							"parameters": {
+								"url": "targetURL"
+							}
+						}
+					],
+					"sid": 571783487570275
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "NoSubButton",
+							"sid": 511442894250634
+						}
+					],
+					"actions": [
+						{
+							"id": "navigate-url",
+							"objectClass": "iframe",
+							"sid": 944970410340275,
+							"parameters": {
+								"url": "iframe.localURL"
+							}
+						}
+					],
+					"sid": 745026215604697
 				}
 			],
-			"actions": [
-				{
-					"id": "navigate-url",
-					"objectClass": "iframe",
-					"sid": 622910180584140,
-					"parameters": {
-						"url": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
-					}
-				}
-			],
-			"sid": 777227045539481
-		},
-		{
-			"eventType": "block",
-			"conditions": [
-				{
-					"id": "on-clicked",
-					"objectClass": "LoadVideo2Button",
-					"sid": 155807121077954
-				}
-			],
-			"actions": [
-				{
-					"id": "navigate-url",
-					"objectClass": "iframe",
-					"sid": 275129531719359,
-					"parameters": {
-						"url": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\""
-					}
-				}
-			],
-			"sid": 791269820534351
-		},
-		{
-			"eventType": "block",
-			"conditions": [
-				{
-					"id": "on-start-of-layout",
-					"objectClass": "System",
-					"sid": 895841966592801
-				}
-			],
-			"actions": [
-				{
-					"id": "load",
-					"objectClass": "VideoPlayer",
-					"sid": 479121990389559
-				}
-			],
-			"sid": 950781538553525
+			"sid": 494625520300006
 		}
 	],
 	"sid": 124371042630695

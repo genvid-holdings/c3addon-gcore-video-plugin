@@ -1,7 +1,7 @@
 {
-	"name": "NoSubButton",
+	"name": "MuteButton",
 	"plugin-id": "Button",
-	"sid": 545256381978048,
+	"sid": 898492499552654,
 	"isGlobal": false,
 	"instanceVariables": [],
 	"behaviorTypes": []
