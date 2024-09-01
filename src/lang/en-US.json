@@ -10,9 +10,13 @@
 				"description": "GCore Video Plugin integration by Genvid Technologies",
 				"help-url": "https://bitbucket.org/genvidtech/c3addon-gcore-video-plugin",
 				"properties": {
+					"video-url": {
+						"name": "URL",
+						"desc": "The GCore Video URL"
+					}
 				},
 				"aceCategories": {
-					"media": "Media"
+					"media": "Video"
 				},
 				"conditions": {
 					"on-state-changed": {
@@ -52,26 +56,15 @@
 					}
 				},
 				"actions": {
-					"load": {
-						"list-name": "Load",
-						"display-text": "Setup video player for iframe {0}",
-						"description": "Setup video player for iframe {0}",
-						"params": {
-							"iframeId": {
-								"name": "iframeId",
-								"desc": "iframe ID"
-							}
-						}
-					},
 					"play": {
 						"list-name": "Play",
-						"display-text": "Starts the playback",
-						"description": "Starts the playback"
+						"display-text": "Start the playback",
+						"description": "Start the playback"
 					},
 					"pause": {
 						"list-name": "Pause",
-						"display-text": "Stops the playback",
-						"description": "Stops the playback"
+						"display-text": "Pause the playback",
+						"description": "Pause the playback"
 					},
 					"set-muted": {
 						"list-name": "Set muted",
@@ -105,6 +98,17 @@
 								"desc": "The volume level between 0 and 1"
 							}
 						}
+					},
+					"set-url": {
+						"list-name": "Set URL",
+						"display-text": "Load video at {0}",
+						"description": "Set the Video Player URL.",
+						"params": {
+							"url": {
+								"name": "URL",
+								"desc": "The URL to load"
+							}
+						}
 					}
 				},
 				"expressions": {
@@ -123,6 +127,10 @@
 					"get-duration": {
 						"description": "The duration of the video.",
 						"translated-name": "GetDuration"
+					},
+					"url": {
+						"description": "The URL of the video",
+						"translated-name": "URL"
 					}
 				}
 			}

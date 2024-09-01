@@ -1,9 +1,6 @@
 const C3 = self.C3;
 
 C3.Plugins.Genvidtech_GCoreVideoPlugin.Acts = {
-	Load(iframeId) {
-		this._Load(iframeId);
-	},
 	Play() {
 		this._Play();
 	},
@@ -18,5 +15,8 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Acts = {
 	},
 	SetVolume(level) {
 		this._SetVolume(level);
+	},
+	SetURL(url) {
+		this._SetURL(url);
 	}
 };

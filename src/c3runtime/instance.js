@@ -4,14 +4,17 @@ const C3 = self.C3;
 // This must also match the ID in plugin.js and domSide.js.
 const DOM_COMPONENT_ID = "genvidtech-gcorevideoplugin";
 
-C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance extends C3.SDKInstanceBase {
+C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance extends C3.SDKDOMInstanceBase {
 	constructor(inst, properties) {
 		super(inst, DOM_COMPONENT_ID);
 
 		this._InitializeState();
-		this.AddDOMMessageHandlers([
-			["state-changed", e => this._OnStateChanged(e)]
-		]);
+
+		if (properties) {
+			this._url = properties[0];
+		}
+
+		this.CreateElement();
 	}
 	
 	Release() {
@@ -19,6 +22,16 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 		this.PostToDOM("dispose");
 
 		super.Release();
+	}
+
+	GetElementState()
+	{
+		// Return JSON with the state of the element. This is passed along to both CreateElement()
+		// and UpdateState() in domSide.js. It provides a convenient way to send all the DOM element
+		// state in one go, ensuring any changes are reflected in the real element.
+		return {
+			"url": this._url
+		};
 	}
 
 	// Initialize state when setting up or disposing player
@@ -37,6 +50,7 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 
 		this._playerState = "loading";
 		this._audioState = "ready";
+
 	}
 	
 	_OnStateChanged(e) {
@@ -120,11 +134,11 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 		this.Trigger(C3.Plugins.Genvidtech_GCoreVideoPlugin.Cnds.OnStateChanged);
 	}
 
-
-	_Load(iframeId) {
-		this.PostToDOM("load", iframeId);
+	Draw(renderer)
+	{
+		// not used - a DOM element is positioned at this instance instead
 	}
-
+	
 	_Play() {
 		this.PostToDOM("play");
 	}
@@ -158,10 +172,6 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 	}	
 
 	_SetState(state) {
-		if (this._state === state) {
-			return;
-		}
-
 		// Update the local video player state
 		this._state = state;
 	}
@@ -170,14 +180,41 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 		return this._state;
 	}
 
-	SaveToJson() {
+	_SetURL(url)
+	{
+		if (this._url === url)
+			return;						// no change
+		
+		// Update the locally stored text, and call UpdateElementState().
+		// This calls GetElementState() - which contains the button text as part of the state -
+		// and then calls UpdateState() in domSide.js with the state object, where the button text
+		// is applied to the DOM element.
+		this._url = url;
+		this.UpdateElementState();
+	}
+
+	_GetURL()
+	{
+		return this._url;
+	}
+	
+
+
+	SaveToJson()
+	{
+		// TODO: Add more state in it?
 		return {
 			// data to be saved for savegames
+			"url": this._url
 		};
 	}
 	
-	LoadFromJson(o) {
+	LoadFromJson(o)
+	{
 		// load state for savegames
+		this._url = o["url"];
+		
+		this.UpdateElementState();		// ensures any state changes are updated in the DOM
 	}
 
 	GetScriptInterfaceClass() {
@@ -189,12 +226,23 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 // caller using the script interface.
 const map = new WeakMap();
 
-self.IGCoreVideoInstance = class IGCoreVideoInstance extends self.IInstance {
+self.IGCoreVideoInstance = class IGCoreVideoInstance extends self.IDOMInstance {
 	constructor()
 	{
 		super();
 		
 		// Map by SDK instance
 		map.set(this, self.IInstance._GetInitInst().GetSdkInstance());
+	}
+
+	// Example setter/getter property on script interface
+	set url(u)
+	{
+		map.get(this)._SetURL(u);
+	}
+
+	get url()
+	{
+		return map.get(this)._GetURL();
 	}
 };

@@ -34,16 +34,6 @@
 		],
 		"actions": [
 			{
-				"id": "load",
-				"scriptName": "Load",
-				"params": [
-					{
-						"id": "iframeId",
-						"type": "string"
-					}
-				]
-			},
-			{
 				"id": "play",
 				"scriptName": "Play"
 			},
@@ -80,7 +70,18 @@
 						"type": "number"
 					}
 				]
+			},
+			{
+				"id": "set-url",
+				"scriptName": "SetURL",
+				"params": [
+					{
+						"id": "url",
+						"type": "string"
+					}
+				]
 			}
+
 		],
 		"expressions": [
 			{
@@ -102,6 +103,11 @@
 				"id": "get-duration",
 				"expressionName": "GetDuration",
 				"returnType": "number"
+			},
+			{
+				"id": "url",
+				"expressionName": "URL",
+				"returnType": "string"
 			}
 		]
 	}

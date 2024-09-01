@@ -2,6 +2,7 @@
 	"name": "VideoPlayer",
 	"plugin-id": "Genvidtech_GCoreVideoPlugin",
 	"sid": 654619375241237,
-	"isGlobal": true,
-	"instanceVariables": []
+	"isGlobal": false,
+	"instanceVariables": [],
+	"behaviorTypes": []
 }

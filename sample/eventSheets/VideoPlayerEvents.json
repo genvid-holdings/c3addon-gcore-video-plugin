@@ -2,16 +2,6 @@
 	"name": "VideoPlayerEvents",
 	"events": [
 		{
-			"eventType": "variable",
-			"name": "url",
-			"type": "string",
-			"initialValue": "",
-			"comment": "",
-			"isStatic": false,
-			"isConstant": false,
-			"sid": 618282750089591
-		},
-		{
 			"eventType": "group",
 			"disabled": false,
 			"title": "Video state",
@@ -30,27 +20,10 @@
 					"actions": [
 						{
 							"id": "set-visible",
-							"objectClass": "iframe",
-							"sid": 273788108104968,
+							"objectClass": "VideoPlayer",
+							"sid": 226379029758832,
 							"parameters": {
 								"visibility": "invisible"
-							}
-						},
-						{
-							"id": "load",
-							"objectClass": "VideoPlayer",
-							"sid": 985340206325556,
-							"parameters": {
-								"iframeId": "\"gplayer\""
-							}
-						},
-						{
-							"id": "set-eventvar-value",
-							"objectClass": "System",
-							"sid": 297288380609112,
-							"parameters": {
-								"variable": "url",
-								"value": "iframe.localURL"
 							}
 						}
 					],
@@ -98,6 +71,14 @@
 					],
 					"actions": [
 						{
+							"id": "set-visible",
+							"objectClass": "VideoPlayer",
+							"sid": 996879889516135,
+							"parameters": {
+								"visibility": "visible"
+							}
+						},
+						{
 							"id": "set-text",
 							"objectClass": "PlayerStateText",
 							"sid": 933471033134315,
@@ -119,14 +100,6 @@
 							"sid": 967322932514696,
 							"parameters": {
 								"text": "VideoPlayer.GetCurrentVolume"
-							}
-						},
-						{
-							"id": "set-visible",
-							"objectClass": "iframe",
-							"sid": 851637187463200,
-							"parameters": {
-								"visibility": "visible"
 							}
 						}
 					],
@@ -371,27 +344,18 @@
 					"actions": [
 						{
 							"id": "set-visible",
-							"objectClass": "iframe",
-							"sid": 205226572040313,
+							"objectClass": "VideoPlayer",
+							"sid": 243747804704222,
 							"parameters": {
 								"visibility": "invisible"
 							}
 						},
 						{
-							"id": "navigate-url",
-							"objectClass": "iframe",
-							"sid": 916858517008746,
+							"id": "set-url",
+							"objectClass": "VideoPlayer",
+							"sid": 771308354467195,
 							"parameters": {
 								"url": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
-							}
-						},
-						{
-							"id": "set-instvar-value",
-							"objectClass": "iframe",
-							"sid": 987441784954972,
-							"parameters": {
-								"instance-variable": "localURL",
-								"value": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\""
 							}
 						}
 					],
@@ -409,27 +373,18 @@
 					"actions": [
 						{
 							"id": "set-visible",
-							"objectClass": "iframe",
-							"sid": 250364144434223,
+							"objectClass": "VideoPlayer",
+							"sid": 359429671587790,
 							"parameters": {
 								"visibility": "invisible"
 							}
 						},
 						{
-							"id": "navigate-url",
-							"objectClass": "iframe",
-							"sid": 807744104130543,
+							"id": "set-url",
+							"objectClass": "VideoPlayer",
+							"sid": 192662466680905,
 							"parameters": {
 								"url": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\""
-							}
-						},
-						{
-							"id": "set-instvar-value",
-							"objectClass": "iframe",
-							"sid": 751111633077710,
-							"parameters": {
-								"instance-variable": "localURL",
-								"value": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\""
 							}
 						}
 					],
@@ -563,17 +518,10 @@
 						{
 							"type": "script",
 							"script": "localVars.targetURL = runtime.objects.iframe.getFirstInstance().instVars.localURL + \"?sub_lang=en\";"
-						},
-						{
-							"id": "navigate-url",
-							"objectClass": "iframe",
-							"sid": 864690090226753,
-							"parameters": {
-								"url": "targetURL"
-							}
 						}
 					],
-					"sid": 571783487570275
+					"sid": 571783487570275,
+					"disabled": true
 				},
 				{
 					"eventType": "block",
@@ -584,17 +532,9 @@
 							"sid": 511442894250634
 						}
 					],
-					"actions": [
-						{
-							"id": "navigate-url",
-							"objectClass": "iframe",
-							"sid": 944970410340275,
-							"parameters": {
-								"url": "iframe.localURL"
-							}
-						}
-					],
-					"sid": 745026215604697
+					"actions": [],
+					"sid": 745026215604697,
+					"disabled": true
 				}
 			],
 			"sid": 494625520300006

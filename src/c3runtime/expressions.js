@@ -16,5 +16,8 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Exps =
 	GetDuration() {
 		const state = this._GetState();
 		return state.duration;
+	},
+	URL() {
+		return this._GetURL();
 	}
 };

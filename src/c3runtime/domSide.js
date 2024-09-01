@@ -18,120 +18,166 @@
 	// This must also match the ID in instance.js and plugin.js.
 	const DOM_COMPONENT_ID = "genvidtech-gcorevideoplugin";
 
-	const HANDLER_CLASS = class GCoreVideoDOMHandler extends self.DOMHandler {
+	function StopPropagation(e) {
+		e.stopPropagation();
+	}
+
+	const HANDLER_CLASS = class GCoreVideoDOMHandler extends self.DOMElementHandler {
 		constructor(iRuntime) {
 			super(iRuntime, DOM_COMPONENT_ID);
 
 			this._initialized = false;
+			this.gplayerAPI = null;
 
 			this.AddRuntimeMessageHandlers([
-				["load", e => this._OnLoad(e)],
 				["play", e => this._OnPlay()],
 				["pause", e => this._OnPause()],
 				["mute", e => this._OnMute()],
 				["unmute", e => this._OnUnmute()],
-				["getDuration", e => this._OnGetDuration()],
-				["getVolume", e => this._OnGetVolume()],
 				["seek", e => this._OnSeek(e)],
 				["setVolume", e => this._OnSetVolume(e)],
 				["dispose", e => this._OnDispose()]
 			]);
 		}
 
-		_OnLoad(iframeId) {
-			this.iframeElement = document.getElementById(iframeId);
-			if (this.iframeElement) {
-				if (window.GcorePlayer && window.GcorePlayer.gplayerAPI) {
-					// Initialize the player
-					this.gplayerAPI = new GcorePlayer.gplayerAPI(this.iframeElement);
-				} else {
-					console.error("[video player] GcorePlayer or gplayerAPI not found");
+		CreateElement(elementId, e) {
+			this._elementId = elementId;
+			const elem = document.createElement("iframe");
+			elem.style.position = "absolute";
+			elem.style.border = "none";
+			elem.allow = "autoplay; encrypted-media"
+
+			// Prevent touches reaching the canvas
+			elem.addEventListener("touchstart", StopPropagation);
+			elem.addEventListener("touchmove", StopPropagation);
+			elem.addEventListener("touchend", StopPropagation);
+
+			// Prevent clicks being blocked
+			elem.addEventListener("mousedown", StopPropagation);
+			elem.addEventListener("mouseup", StopPropagation);
+
+			// Prevent key presses being blocked by the Keyboard object
+			elem.addEventListener("keydown", StopPropagation);
+			elem.addEventListener("keyup", StopPropagation);
+
+			elem.addEventListener("click", StopPropagation);
+
+			elem.addEventListener("load", () => {
+				console.log("iframe loaded", elem.src);
+				if (this.gplayerAPI === null) {
+					this._CreatePlayer(elem);
+					console.log("Player created", this.gplayerAPI);	
 				}
+			});
 
-				this.gplayerAPI.on("play", () => {
-					console.log("[video player]", "Playing");
-
-					if (this._initialized) {
-						this.PostToRuntime("state-changed", {
-							state: {
-								playerState: "playing",
-							}
-						});
-					} else {
-						this._OnPause();
-						this._OnGetDuration();
-						this._OnGetVolume();
-					}
-				});
-
-				this.gplayerAPI.on("pause", () => {
-					console.log("[video player]", "Paused");
-					this._initialized = true;
-					this.PostToRuntime("state-changed", {
-						state: {
-							playerState: "paused",
-						}
-					});
-				});
-
-				this.gplayerAPI.on("timeupdate", (e) => {
-					this.PostToRuntime("state-changed", {
-						state: {
-							currentPlaybackTime: e.current,
-						}
-					});
-				});
-
-				this.gplayerAPI.on("volumeupdate", (e) => {
-					console.log("[video player] Volume updated", e);
-
-					this.PostToRuntime("state-changed", {
-						state: {
-							currentVolume: e,
-						}
-					});
-				});
-
-				this.gplayerAPI.on("ended", () => {
-					console.log("[video player]", "Ended");
-
-					this.PostToRuntime("state-changed", {
-						state: {
-							playerState: "ended",
-						}
-					});
-				});
-
-				this.gplayerAPI.on("ready", () => {
-					console.log("[video player]", "Ready");
-
-					this._initialized = false;
-					this.PostToRuntime("state-changed", {
-						state: {
-							playerState: "ready",
-						}
-					});
-
-					// Actually load the video for the first time.
-					this._OnPlay();
-
-				});
+			// The create message includes the state retrieved by GetElementState() in instance.js,
+			// so also update the element state based on those details.
+			this.UpdateState(elem, e);
 
 
+			console.log("IFrame created:", elem);
 
-			} else {
-				console.error("[video player] Iframe element not found");
-			}
+			return elem;
 		}
 
 		UpdateState(elem, e) {
+			// Update the state of the DOM element 'elem' with the state 'e'. The state has been
+			// retrieved by calling GetElementState() in instance.js, which includes all necessary
+			// details to set the correct state of the DOM element.
+			// NOTE: the runtime automatically manages the position, size and visibility of the DOM
+			// element, so this only needs to handle state unique to the element, such as the button
+			// text in this case.
+			elem.src = e["url"];
+		}
+
+		_PostStateToRuntime(state) {
+			this.PostToRuntimeElement("state-changed", this._elementId, { state });
+		}
+
+
+		_CreatePlayer(elem) {
+
+			console.log("Setting up new player");
+			if (window.GcorePlayer && window.GcorePlayer.gplayerAPI) {
+				// Initialize the player
+				this.gplayerAPI = new GcorePlayer.gplayerAPI(elem);
+			} else {
+				console.error("[video player] GcorePlayer or gplayerAPI not found");
+				throw new Error("GCore Player API not found");
+			}
+
+			this.gplayerAPI.on('error', (err) => {
+				console.error("VideoPlayer API Error", err);
+				// TODO: Send it to runtime and add a trigger/conditions.			
+			});
+
+			this.gplayerAPI.on("play", () => {
+				console.log("[video player]", "Playing");
+
+				if (this._initialized) {
+					this._PostStateToRuntime({
+						playerState: "playing"
+					});
+				} else {
+					this._OnPause();
+					this._OnGetDuration();
+					this._OnGetVolume();
+				}
+			});
+
+			this.gplayerAPI.on("pause", () => {
+				console.log("[video player]", "Paused");
+				this._initialized = true;
+				this._PostStateToRuntime({
+					playerState: "paused"
+				});
+			});
+
+			this.gplayerAPI.on("timeupdate", (e) => {
+				this._PostStateToRuntime({
+
+					currentPlaybackTime: e.current
+				});
+			});
+
+			this.gplayerAPI.on("volumeupdate", (e) => {
+				console.log("[video player] Volume updated", e);
+
+				this._PostStateToRuntime({
+					currentVolume: e,
+				});
+			});
+
+			this.gplayerAPI.on("ended", () => {
+				console.log("[video player]", "Ended");
+
+				this._PostStateToRuntime({
+					state: {
+						playerState: "ended",
+					}
+				});
+			});
+
+			this.gplayerAPI.on("ready", () => {
+				console.log("[video player]", "Ready");
+
+				this._initialized = false;
+				this._PostStateToRuntime({
+					playerState: "ready",
+				});
+
+				// Actually load the video for the first time.
+				this._OnPlay();
+			});
 		}
 
 		_OnPlay() {
+			console.log("[video player] Play requested");
 			this.gplayerAPI.method({ name: "play" });
 		}
 
 		_OnPause() {
+			console.log("[video player] Pause requested");
 			this.gplayerAPI.method({ name: "pause" });
 		}
 
@@ -161,10 +207,8 @@
 				name: "mute", callback: () => {
 					console.log("[video player]", "Muted");
 
-					this.PostToRuntime("state-changed", {
-						state: {
-							audioState: "muted",
-						}
+					this._PostStateToRuntime({
+						audioState: "muted",
 					});
 				}
 			});
@@ -177,9 +221,7 @@
 					console.log("[video player]", "Unmuted");
 
 					this.PostToRuntime("state-changed", {
-						state: {
-							audioState: "unmuted",
-						}
+						audioState: "unmuted",
 					});
 				}
 			});
@@ -191,10 +233,8 @@
 				name: "getDuration", callback: (res) => {
 					console.log("[video player] Duration", res);
 
-					this.PostToRuntime("state-changed", {
-						state: {
-							duration: res,
-						}
+					this._PostStateToRuntime({
+						duration: res,
 					});
 				}
 			});
@@ -206,10 +246,8 @@
 				name: "getVolume", callback: (res) => {
 					console.log("[video player] Current volume", res);
 
-					this.PostToRuntime("state-changed", {
-						state: {
-							currentVolume: res,
-						}
+					this._PostStateToRuntime({
+						currentVolume: res,
 					});
 
 				}
@@ -217,7 +255,6 @@
 		}
 
 		_OnDispose() {
-			window.removeEventListener("message", this.handleGcoreMethodMessages.bind(this));
 			this.gplayerAPI = null;
 		}
 	};

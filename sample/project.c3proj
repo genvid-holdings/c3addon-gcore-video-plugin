@@ -39,7 +39,6 @@
 	"uniqueId": "n2ajejczta9",
 	"objectTypes": {
 		"items": [
-			"iframe",
 			"PlayButton",
 			"GoButton",
 			"PlayerStateText",

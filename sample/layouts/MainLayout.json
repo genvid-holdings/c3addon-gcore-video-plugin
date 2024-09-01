@@ -7,24 +7,16 @@
 			"subLayers": [],
 			"instances": [
 				{
-					"type": "iframe",
+					"type": "VideoPlayer",
 					"properties": {
-						"url": "https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW",
-						"html": "",
-						"initially-visible": true,
-						"id": "gplayer",
-						"allow": "fullscreen; autoplay; encrypted-media;",
-						"enable-sandbox": false,
-						"sandbox": "allow-scripts"
+						"video-url": "https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW"
 					},
-					"uid": 2,
-					"instanceVariables": {
-						"localURL": "https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW"
-					},
+					"uid": 486,
+					"instanceVariables": {},
 					"behaviors": {},
 					"world": {
-						"x": 22,
-						"y": 319,
+						"x": 35,
+						"y": 316,
 						"width": 437,
 						"height": 295,
 						"originX": 0,
@@ -936,14 +928,7 @@
 		}
 	],
 	"sid": 232285377964416,
-	"nonworld-instances": [
-		{
-			"type": "VideoPlayer",
-			"properties": {},
-			"uid": 4,
-			"instanceVariables": {}
-		}
-	],
+	"nonworld-instances": [],
 	"effectTypes": [],
 	"width": 960,
 	"height": 1708,

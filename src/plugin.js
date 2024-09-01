@@ -28,12 +28,31 @@ const PLUGIN_CLASS = SDK.Plugins.Genvidtech_GCoreVideoPlugin = class GCoreVideoP
 		this._info.SetCategory(PLUGIN_CATEGORY);
 		this._info.SetAuthor("Genvid Technologies LLC");
 		this._info.SetHelpUrl(self.lang(".help-url"));
+		this._info.SetPluginType("world");			// mark as world plugin since it's placed in the layout
+		this._info.SetIsResizable(true);			// allow to be resized
+		this._info.AddCommonPositionACEs();
+		this._info.AddCommonSceneGraphACEs();
+		this._info.AddCommonSizeACEs();
+		this._info.AddCommonAngleACEs();
+		this._info.AddCommonAppearanceACEs();
+		this._info.AddCommonZOrderACEs();
 
 		this._info.AddRemoteScriptDependency("https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js");
 		
 		// Load domSide.js in the document context (main thread).
 		// This is important for supporting the runtime's web worker mode.
 		this._info.SetDOMSideScripts(["c3runtime/domSide.js"]);
+
+
+		SDK.Lang.PushContext(".properties");
+		
+		this._info.SetProperties([
+			new SDK.PluginProperty("text", "video-url", "")
+		]);
+		
+		SDK.Lang.PopContext();		// .properties
+
+		SDK.Lang.PopContext();      // .plugins
 	}
 };
 
