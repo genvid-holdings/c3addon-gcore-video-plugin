@@ -323,7 +323,7 @@
 					"type": "SkipButton",
 					"properties": {
 						"type": "button",
-						"text": "Skip to 00:30",
+						"text": "Skip to 01:40",
 						"tooltip": "",
 						"initially-visible": true,
 						"enabled": true,

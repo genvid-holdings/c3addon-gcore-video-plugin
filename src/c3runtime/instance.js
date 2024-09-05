@@ -69,6 +69,7 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 				case "playing": {
 					this._isPlaying = true;
 					this._isPaused = false;
+					this._isEnded = false;
 					this._playerState = "playing";
 			
 					break;
@@ -76,12 +77,14 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 				case "paused": {
 					this._isPaused = true;
 					this._isPlaying = false;
+					this._isEnded = false;
 					this._playerState = "paused";
-			
+
 					break;
 				}
 				case "ended": {
 					this._isPlaying = false;
+					this._isPaused = false;
 					this._isEnded = true;
 					this._playerState = "ended";
 		

@@ -164,9 +164,7 @@
 				console.log("[video player]", "Ended");
 
 				this._PostStateToRuntime({
-					state: {
-						playerState: "ended",
-					}
+					playerState: "ended"
 				});
 			});
 
