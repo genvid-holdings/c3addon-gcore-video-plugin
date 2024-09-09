@@ -14,14 +14,12 @@ const PLUGIN_ID = "Genvidtech_GCoreVideoPlugin";
 const PLUGIN_VERSION = "1.0.0.3";
 const PLUGIN_CATEGORY = "media";
 
-const PLUGIN_CLASS = SDK.Plugins.Genvidtech_GCoreVideoPlugin = class GCoreVideoPlugin extends SDK.IPluginBase
-{
-	constructor()
-	{
+const PLUGIN_CLASS = SDK.Plugins.Genvidtech_GCoreVideoPlugin = class GCoreVideoPlugin extends SDK.IPluginBase {
+	constructor() {
 		super(PLUGIN_ID);
-		
+
 		SDK.Lang.PushContext("plugins." + PLUGIN_ID.toLowerCase());
-		
+
 		this._info.SetName(self.lang(".name"));
 		this._info.SetDescription(self.lang(".description"));
 		this._info.SetVersion(PLUGIN_VERSION);
@@ -38,19 +36,22 @@ const PLUGIN_CLASS = SDK.Plugins.Genvidtech_GCoreVideoPlugin = class GCoreVideoP
 		this._info.AddCommonZOrderACEs();
 
 		this._info.AddRemoteScriptDependency("https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js");
-		
+
 		// Load domSide.js in the document context (main thread).
 		// This is important for supporting the runtime's web worker mode.
-		this._info.SetDOMSideScripts(["c3runtime/domSide.js"]);
-
+		this._info.SetDOMSideScripts([
+			"c3runtime/domSide.js",
+			"c3runtime/dom/ElementHandler.js",
+			"c3runtime/dom/ElementHandlerMap.js"
+		]);
 
 		SDK.Lang.PushContext(".properties");
-		
+
 		this._info.SetProperties([
 			new SDK.PluginProperty("text", "video-url", ""),
 			new SDK.PluginProperty("text", "video-subtitles", "off")
 		]);
-		
+
 		SDK.Lang.PopContext();		// .properties
 
 		SDK.Lang.PopContext();      // .plugins

@@ -19,6 +19,8 @@
 		"c3runtime/plugin.js",
 		"c3runtime/type.js",
 		"c3runtime/instance.js",
+		"c3runtime/dom/ElementHandler.js",
+		"c3runtime/dom/ElementHandlerMap.js",
 		"c3runtime/domSide.js",
 		"c3runtime/conditions.js",
 		"c3runtime/actions.js",
