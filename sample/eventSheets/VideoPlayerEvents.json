@@ -206,7 +206,8 @@
 							"sid": 771308354467195,
 							"parameters": {
 								"url": "\"https://player.gvideo.co/videos/421804_JUpVsXgbH6ky2vAW\"",
-								"subtitles": "\"\""
+								"subtitles": "\"\"",
+								"no-low-latency": false
 							}
 						},
 						{
@@ -240,7 +241,8 @@
 							"sid": 192662466680905,
 							"parameters": {
 								"url": "\"https://player.gvideo.co/videos/2675_cC4PEC0AWy1qu03R\"",
-								"subtitles": "\"\""
+								"subtitles": "\"\"",
+								"no-low-latency": false
 							}
 						},
 						{
@@ -406,6 +408,95 @@
 					"sid": 745026215604697
 				},
 				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "LiveStreamButton",
+							"sid": 188292165007164
+						}
+					],
+					"actions": [
+						{
+							"id": "set-visible",
+							"objectClass": "VideoPlayer",
+							"sid": 535341430795077,
+							"parameters": {
+								"visibility": "invisible"
+							}
+						},
+						{
+							"type": "comment",
+							"text": "Test live stream https://streaming.gcore.com/streaming/editor/1970571"
+						},
+						{
+							"id": "set-url",
+							"objectClass": "VideoPlayer",
+							"sid": 905636149532787,
+							"parameters": {
+								"url": "\"https://player.gvideo.co/streams/421804_1970571\"",
+								"subtitles": "\"\"",
+								"no-low-latency": false
+							}
+						},
+						{
+							"callFunction": "UpdateURLUI",
+							"sid": 191538275064768
+						}
+					],
+					"sid": 926110979382380
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "NoLowLatencyButton",
+							"sid": 910103314378187
+						}
+					],
+					"actions": [
+						{
+							"id": "set-no-low-latency",
+							"objectClass": "VideoPlayer",
+							"sid": 524359989796029,
+							"parameters": {
+								"noLowLatency": true
+							}
+						},
+						{
+							"callFunction": "UpdateURLUI",
+							"sid": 935848849397527
+						}
+					],
+					"sid": 472035348859412
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-clicked",
+							"objectClass": "NoLowLatencyOffButton",
+							"sid": 810714201032938
+						}
+					],
+					"actions": [
+						{
+							"id": "set-no-low-latency",
+							"objectClass": "VideoPlayer",
+							"sid": 652615218523108,
+							"parameters": {
+								"noLowLatency": false
+							}
+						},
+						{
+							"callFunction": "UpdateURLUI",
+							"sid": 814991291271484
+						}
+					],
+					"sid": 361403318235323
+				},
+				{
 					"functionName": "UpdateURLUI",
 					"functionDescription": "",
 					"functionCategory": "",
@@ -430,6 +521,14 @@
 							"sid": 340779605851623,
 							"parameters": {
 								"text": "VideoPlayer.Subtitles"
+							}
+						},
+						{
+							"id": "set-text",
+							"objectClass": "NoLowLatencyText",
+							"sid": 708740814074368,
+							"parameters": {
+								"text": "VideoPlayer.NoLowLatency"
 							}
 						},
 						{

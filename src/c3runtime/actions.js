@@ -16,10 +16,13 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Acts = {
 	SetVolume(level) {
 		this._SetVolume(level);
 	},
-	SetURL(url, subtitles) {
-		this._SetURL(url, subtitles);
+	SetURL(url, subtitles, noLowLatency) {
+		this._SetURL(url, subtitles, noLowLatency);
 	},
 	SetSubtitles(language) {
 		this._SetSubtitles(language);
+	},
+	SetNoLowLatency(noLowLatency) {
+		this._SetNoLowLatency(noLowLatency);
 	}
 };

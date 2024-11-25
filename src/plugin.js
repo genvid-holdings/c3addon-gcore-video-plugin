@@ -11,7 +11,7 @@ const SDK = self.SDK;
 const PLUGIN_ID = "Genvidtech_GCoreVideoPlugin";
 ////////////////////////////////////////////
 
-const PLUGIN_VERSION = "1.0.0.4";
+const PLUGIN_VERSION = "1.0.0.5";
 const PLUGIN_CATEGORY = "media";
 
 const PLUGIN_CLASS = SDK.Plugins.Genvidtech_GCoreVideoPlugin = class GCoreVideoPlugin extends SDK.IPluginBase {
@@ -49,7 +49,8 @@ const PLUGIN_CLASS = SDK.Plugins.Genvidtech_GCoreVideoPlugin = class GCoreVideoP
 
 		this._info.SetProperties([
 			new SDK.PluginProperty("text", "video-url", ""),
-			new SDK.PluginProperty("text", "video-subtitles", "off")
+			new SDK.PluginProperty("text", "video-subtitles", "off"),
+			new SDK.PluginProperty("check", "no-low-latency", false)
 		]);
 
 		SDK.Lang.PopContext();		// .properties

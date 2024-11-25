@@ -10,9 +10,11 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 
 		this._InitializeState();
 
+		console.log('debug properties', properties)
 		if (properties) {
 			this._url = properties[0];
 			this._subtitles = properties[1] || "off";
+			this._noLowLatency = properties[2] || false;
 		}
 
 		this.CreateElement();
@@ -29,7 +31,8 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 		// state in one go, ensuring any changes are reflected in the real element.
 		return {
 			"url": this._url,
-			"subtitles": this._subtitles
+			"subtitles": this._subtitles,
+			"noLowLatency": this._noLowLatency
 		};
 	}
 
@@ -142,11 +145,14 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 		};
 	}
 
-	_SetURL(url, subtitles) {
+	_SetURL(url, subtitles, noLowLatency) {
 		if (subtitles === "") {
 			subtitles = this._subtitles
 		}
-		if (this._url === url && this._subtitles === subtitles) {
+		if (!noLowLatency) {
+			noLowLatency = this._noLowLatency
+		}
+		if (this._url === url && this._subtitles === subtitles && this._noLowLatency === noLowLatency) {
 			return;
 		}
 
@@ -156,6 +162,7 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 		// is applied to the DOM element.
 		this._url = url;
 		this._subtitles = subtitles;
+		this._noLowLatency = noLowLatency;
 		this.UpdateElementState();
 	}
 
@@ -176,14 +183,26 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 		return this._subtitles;
 	}
 
+	_SetNoLowLatency(noLowLatency) {
+		noLowLatency = noLowLatency || false;
+		if (this._noLowLatency === noLowLatency)
+			return;
 
+		this._noLowLatency = noLowLatency;
+		this.UpdateElementState();
+	}
+
+	_GetNoLowLatency() {
+		return this._noLowLatency ? 1 : 0;
+	}
 
 	SaveToJson() {
 		// TODO: Add more state in it?
 		return {
 			// data to be saved for savegames
 			"url": this._url,
-			"subtitles": this._subtitles
+			"subtitles": this._subtitles,
+			"noLowLatency": this._noLowLatency
 		};
 	}
 
@@ -191,6 +210,7 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Instance = class GCoreVideoInstance exten
 		// load state for savegames
 		this._url = o["url"];
 		this._subtitles = o["subtitles"] || "off";
+		this._noLowLatency = o["noLowLatency"];
 
 		this.UpdateElementState();		// ensures any state changes are updated in the DOM
 	}
@@ -227,5 +247,13 @@ self.IGCoreVideoInstance = class IGCoreVideoInstance extends self.IDOMInstance {
 
 	get subtitles() {
 		return map.get(this)._GetSubtitles();
+	}
+
+	set noLowLatency(f) {
+		map.get(this)._SetNoLatencyFlag(f);
+	}
+
+	get noLowLatency() {
+		return map.get(this)._GetNoLowLatency();
 	}
 };

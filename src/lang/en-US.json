@@ -16,6 +16,10 @@
 					"video-subtitles": {
 						"name": "Subtitles",
 						"desc": "The subtitles language for subtitles. \"off\" to turn them off."
+					},
+					"no-low-latency": {
+						"name": "No low latency flag",
+						"desc": "No low latency flag. Intended to be used by live stream."
 					}
 				},
 				"aceCategories": {
@@ -114,7 +118,7 @@
 					},
 					"set-url": {
 						"list-name": "Load Video",
-						"display-text": "Load video at {0} with language {1}",
+						"display-text": "Load video at {0} with language {1} with no low latency flag {2}",
 						"description": "Set the Video Player URL.",
 						"params": {
 							"url": {
@@ -124,6 +128,10 @@
 							"subtitles": {
 								"name": "Subtitles",
 								"desc": "The subtitles language to use. 'off' to disable, leave empty to keep the current setting."
+							},
+							"no-low-latency": {
+								"name": "No low latency flag",
+								"desc": "No low latency flag. Should be only used by live stream. 'true' to enable."
 							}
 						}
 					},
@@ -135,6 +143,17 @@
 							"language": {
 								"name": "Language",
 								"desc": "A language code for the subtitles, or \"off\" to turn them off."
+							}
+						}
+					},
+					"set-no-low-latency": {
+						"list-name": "Set No Low Latency",
+						"display-text": "Set no low latency flag to {0}",
+						"description": "Set no low latency flag for the video.",
+						"params": {
+							"noLowLatency": {
+								"name": "No Low Latency Flag",
+								"desc": "No low latency flag."
 							}
 						}
 					}
@@ -171,6 +190,10 @@
 					"subtitles": {
 						"description": "The subtitles languages for the video. \"off\" if turned off.",
 						"translated-name": "Subtitles"
+					},
+					"no-low-latency": {
+						"description": "The no low latency flag for the video.",
+						"translated-name": "NoLowLatency"
 					}
 				}
 			}

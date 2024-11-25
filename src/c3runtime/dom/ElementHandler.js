@@ -72,8 +72,14 @@
 		UpdateState(e) {
 			let url = e["url"];
 			const language = e["subtitles"] || "off";
-			if (url !== "" && language !== "off") {
-				url += "?sub_lang=" + language;
+			const noLowLatency = e["noLowLatency"] || false;
+			if (url !== "") {
+				if (language !== "off") {
+					url += "?sub_lang=" + language;
+				}
+				if (noLowLatency) {
+					url += (url.includes('?') ? "&" : "?") + "no_low_latency";
+				}
 			}
 			if (this.element.src !== url) {
 				let playerState = "offline";

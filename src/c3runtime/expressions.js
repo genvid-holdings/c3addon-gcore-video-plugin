@@ -25,5 +25,8 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Exps =
 	},
 	Subtitles() {
 		return this._GetSubtitles();
+	},
+	NoLowLatency() {
+		return this._GetNoLowLatency();
 	}
 };

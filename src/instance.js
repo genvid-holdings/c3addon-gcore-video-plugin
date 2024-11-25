@@ -45,9 +45,15 @@ PLUGIN_CLASS.Instance = class GCoreVideoInstance extends SDK.IWorldInstanceBase
 		
 		let url = this._inst.GetPropertyValue("video-url");
 		const subtitles = this._inst.GetPropertyValue("video-subtitles") || "off";
+		const noLowLatency = this._inst.GetPropertyValue("no-low-latency") || false;
+
 		if (subtitles !== "off") {
-			url += "?sub_lang=" + subtitles 
+			url += "?sub_lang=" + subtitles;
 		}
+		if (noLowLatency) {
+			url += (url.includes('?') ? "&" : "?") + "no_low_latency";
+		}
+
 		this._webglText.SetText(url);
 	}
 	
