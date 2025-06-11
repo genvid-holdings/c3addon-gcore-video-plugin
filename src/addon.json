@@ -1,11 +1,11 @@
 ﻿{
 	"$schema": "../SDK/plugin-sdk/v1/plugin.addon.schema.json",
 	"is-c3-addon": true,
-	"sdk-version": 1,
+	"sdk-version": 2,
 	"type": "plugin",
-	"name": "GCore Video",
+	"name": "Genvid GCore Video",
 	"id": "Genvidtech_GCoreVideoPlugin",
-	"version": "1.0.0.5",
+	"version": "1.0.1.0",
 	"author": "Genvid Technologies, LLC",
 	"website": "https://bitbucket.org/genvidtech/c3addon-gcore-video-plugin",
 	"documentation": "https://bitbucket.org/genvidtech/c3addon-gcore-video-plugin",
@@ -16,8 +16,8 @@
 		"instance.js"
 	],
 	"file-list": [
+		"c3runtime/main.js",
 		"c3runtime/plugin.js",
-		"c3runtime/type.js",
 		"c3runtime/instance.js",
 		"c3runtime/dom/ElementHandler.js",
 		"c3runtime/dom/ElementHandlerMap.js",
@@ -30,7 +30,6 @@
 		"addon.json",
 		"icon.svg",
 		"plugin.js",
-		"type.js",
 		"instance.js"
 	]
 }

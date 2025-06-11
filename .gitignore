@@ -54,3 +54,6 @@ Thumbs.db
 # zip file
 *.c3addon
 ios/
+html5/
+.vscode
+build*/

@@ -1,14 +1,29 @@
 {
-  "name": "construct3-videoplayer-addon2",
-  "version": "1.0.0",
-  "description": "Construct 3 video player add-on",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "http-server ./src -p 8080 --cors -c-1"
-  },
+  "name": "c3addon-gcore-video-player",
+  "version": "1.0.1",
+  "description": "Construct3 GCore Video Player add-on by Genvid",
   "devDependencies": {
-    "@types/node": "^22.5.0",
-    "http-server": "^14.1.1"
+    "@eslint/js": "^9.25.1",
+    "@eslint/json": "^0.12.0",
+    "eslint": "^9.25.1",
+    "globals": "^16.0.0",
+    "http-server": "^14.1.1",
+    "shx": "^0.4.0",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.31.0"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "build": "tsc -p src --outDir dist",
+    "postbuild": "shx cp src/*.{json,svg} dist/ && shx mkdir -p dist/lang && shx cp src/lang/*.json dist/lang && shx rm dist/tsconfig.json",
+    "watch": "tsc -p src --outDir dist -w",
+    "secrets": "op inject -i sample/templates/eos_config.json -o sample/files/eos_config.json -f",
+    "devmode": "http-server dist --cors",
+    "prezip:windows": "shx rm -f Genvidtech_GCoreVideoPlugin.c3addon",
+    "zip:windows": "cd dist && 7z.exe a -tzip -r ..\\Genvidtech_GCoreVideoPlugin.c3addon .",
+    "all:windows": "npm run lint && npm run build && npm run zip:windows",
+    "prezip:linux": "shx rm -f Genvidtech_GCoreVideoPlugin.c3addon",
+    "zip:linux": "cd dist && zip ../Genvidtech_GCoreVideoPlugin.c3addon -r .",
+    "all:linux": "npm run lint && npm run build && npm run zip:linux"
   }
 }
