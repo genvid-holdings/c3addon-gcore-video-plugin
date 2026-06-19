@@ -171,17 +171,66 @@
         return;
       }
 
+      let manifestUrl: string;
+      try {
+        manifestUrl = await this.ResolveManifest(url);
+      } catch (err) {
+        console.error("[video player] Failed to resolve manifest", err);
+        this.PostErrorToRuntime("gcore", `Could not resolve video manifest: ${err}`);
+        return;
+      }
+
+      // ResolveManifest awaits a network fetch for embed URLs — re-check that
+      // this request is still current before committing the player.
+      if (this.currentUrl !== url) {
+        return;
+      }
+
       this.DestroyPlayer();
 
       const player = new Player({
         autoPlay: true,
         mute: true,
-        sources: [{ source: url, mimeType: this.GetMimeType(url) }],
+        sources: [{ source: manifestUrl, mimeType: this.GetMimeType(manifestUrl) }],
       });
       this.player = player;
       this.RegisterEvents(player);
       player.attachTo(this.element);
-      console.log("Player created", player);
+      console.log("Player created", player, "manifest:", manifestUrl);
+    }
+
+    // The v2 player needs a direct HLS manifest URL, but projects store GCore
+    // *embed page* URLs (player.gvideo.co/videos|streams/<id>) — the kind the
+    // old iframe plugin consumed. GCore serves the manifest from the account CDN
+    // host derived from the client id (the numeric prefix of the video id):
+    //   player.gvideo.co/videos/<clientId>_<tok>
+    //     -> https://<clientId>.gvideo.io/videos/<clientId>_<tok>/master.m3u8
+    // A URL that is already a manifest is returned unchanged; anything that
+    // doesn't match the embed pattern falls back to reading the stream URL the
+    // embed page itself uses (options.multisources[].source).
+    async ResolveManifest(url: string): Promise<string> {
+      if (/\.(m3u8|mpd)([?#]|$)/i.test(url)) {
+        return url;
+      }
+      const path = url.split(/[?#]/)[0];
+      const m = path.match(/\/(videos|streams)\/((\d+)_[^/]+?)\/?$/);
+      if (m) {
+        const [, kind, id, clientId] = m;
+        return `https://${clientId}.gvideo.io/${kind}/${id}/master.m3u8`;
+      }
+      // Fallback for non-standard embed URLs: scrape the manifest the embed
+      // page references directly.
+      const resp = await fetch(url, { credentials: "omit" });
+      if (!resp.ok) {
+        throw new Error(`embed page HTTP ${resp.status}`);
+      }
+      const html = await resp.text();
+      const src = html.match(/"source"\s*:\s*"([^"]+?\.(?:m3u8|mpd)[^"]*)"/i);
+      if (!src) {
+        throw new Error("could not resolve manifest from URL");
+      }
+      // Unescape any JSON-escaped slashes (e.g. "https:\/\/...").
+      return src[1].replace(/\\\//g, "/");
     }
 
     GetMimeType(url: string) {
