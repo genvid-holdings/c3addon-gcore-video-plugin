@@ -91,6 +91,10 @@
     player: GCorePlayer | null;
     currentUrl: string;
     subtitleLang: string;
+    // Audio is muted only for the very first autoplay (browser policy); after
+    // that we carry the mute/volume state across video changes.
+    lastMuted: boolean;
+    lastVolume: number;
     resizeObserver: ResizeObserver | null;
     controller: AbortController;
 
@@ -105,6 +109,8 @@
       this.player = null;
       this.currentUrl = "";
       this.subtitleLang = "off";
+      this.lastMuted = true;
+      this.lastVolume = -1;
       this.resizeObserver = null;
       this.controller = new AbortController();
 
@@ -218,7 +224,9 @@
 
       const player = new Player({
         autoPlay: true,
-        mute: true,
+        // Only the first autoplay needs forced mute; subsequent loads keep the
+        // user's mute state.
+        mute: this.lastMuted,
         sources: [{ source: manifestUrl, mimeType: this.GetMimeType(manifestUrl) }],
       });
       this.player = player;
@@ -359,6 +367,9 @@
       });
 
       player.on(PlayerEvent.VolumeUpdate, () => {
+        // Remember the latest audio state so it carries to the next video.
+        this.lastMuted = player.isMuted();
+        this.lastVolume = player.getVolume();
         this.PostStateToRuntime({
           currentVolume: player.getVolume(),
           audioState: player.isMuted() ? "muted" : "unmuted",
@@ -372,6 +383,10 @@
 
       player.on(PlayerEvent.Ready, () => {
         console.log("[video player]", "Ready");
+        // Restore the prior volume level on a subsequent (unmuted) load.
+        if (!this.lastMuted && this.lastVolume >= 0) {
+          player.setVolume(this.lastVolume);
+        }
         this.PostPlaybackInfo(player);
         // Subtitle tracks are known once the manifest is parsed (by Ready).
         this.ApplySubtitles();
@@ -437,18 +452,21 @@
       const volume = state["requestedVolume"];
       console.log("[video player] Set volume requested", volume);
       if (typeof volume === "number") {
+        this.lastVolume = volume;
         this.player?.setVolume(volume);
       }
     }
 
     OnMute() {
       console.log("[video player]", "Mute requested");
+      this.lastMuted = true;
       this.player?.mute();
       this.PostStateToRuntime({ audioState: "muted" });
     }
 
     OnUnmute() {
       console.log("[video player]", "Unmute requested");
+      this.lastMuted = false;
       this.player?.unmute();
       this.PostStateToRuntime({ audioState: "unmuted" });
     }
