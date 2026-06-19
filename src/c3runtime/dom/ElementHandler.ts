@@ -21,16 +21,26 @@
     resize(size: { width: number; height: number }): void;
     on(event: string, handler: (e: unknown) => void): void;
     destroy(): void;
-    // Closed-caption / subtitle tracks (Clappr-style). Track entries vary by
-    // playback backend; match defensively across whatever fields are present.
+    // Closed-caption / subtitle tracks. The HLS backend returns entries shaped
+    // { id, name, track: { id, label, language } }; match defensively.
     closedCaptionsTracks: Array<{
       id: number;
       name?: string;
       label?: string;
       lang?: string;
       language?: string;
+      track?: { id?: number; label?: string; language?: string };
     }>;
     closedCaptionsTrackId: number;
+    // Reaching into the active playback is required for subtitles: the public
+    // closedCaptionsTrackId is a no-op on the HLS playback (it mutates a plain
+    // object), whereas setTextTrack() sets hls.subtitleTrack and loads the VTT.
+    core?: {
+      activePlayback?: {
+        name?: string;
+        setTextTrack?: (id: number) => void;
+      };
+    };
   }
 
   interface GCorePlayerConstructor {
@@ -260,36 +270,50 @@
       }
     }
 
-    // Select the closed-caption track matching the requested language, or
-    // disable captions for "off"/unknown. Track entries differ by backend, so
-    // match across language code and human-readable name.
+    // Select the subtitle track matching the requested language, or disable for
+    // "off"/unknown. Resolve to a track id, then load it via the active
+    // playback's setTextTrack() — the public closedCaptionsTrackId getter/setter
+    // is a no-op on the HLS backend and never fetches the subtitle VTT.
     ApplySubtitles() {
       const player = this.player;
       if (!player) {
         return;
       }
       const lang = (this.subtitleLang || "off").toLowerCase();
-      if (lang === "off") {
-        player.closedCaptionsTrackId = -1;
-        return;
+      let trackId = -1;
+      if (lang !== "off") {
+        const tracks = player.closedCaptionsTracks || [];
+        const match = tracks.find((t) => {
+          const fields = [
+            t.lang,
+            t.language,
+            t.track?.language,
+            t.name,
+            t.label,
+            t.track?.label,
+          ]
+            .filter(Boolean)
+            .map((s) => String(s).toLowerCase());
+          return fields.some((f) => f === lang || f.startsWith(lang));
+        });
+        if (match) {
+          trackId = match.id;
+        } else {
+          console.warn(
+            "[video player] No subtitle track for",
+            lang,
+            "available:",
+            tracks
+          );
+        }
       }
-      const tracks = player.closedCaptionsTracks || [];
-      const match = tracks.find((t) => {
-        const fields = [t.lang, t.language, t.name, t.label]
-          .filter(Boolean)
-          .map((s) => String(s).toLowerCase());
-        return fields.some((f) => f === lang || f.startsWith(lang));
-      });
-      if (match) {
-        player.closedCaptionsTrackId = match.id;
+
+      const playback = player.core?.activePlayback;
+      if (playback && typeof playback.setTextTrack === "function") {
+        playback.setTextTrack(trackId);
       } else {
-        console.warn(
-          "[video player] No subtitle track for",
-          lang,
-          "available:",
-          tracks
-        );
-        player.closedCaptionsTrackId = -1;
+        // Fallback for backends where closedCaptionsTrackId is honoured.
+        player.closedCaptionsTrackId = trackId;
       }
     }
 
