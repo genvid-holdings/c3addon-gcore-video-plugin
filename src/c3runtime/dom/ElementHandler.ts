@@ -1,30 +1,91 @@
 "use strict";
 
 {
-  interface GPlayerAPI {
+  const GCORE_PLAYER_URL: string =
+    "https://player.gvideo.co/v2/assets/latest/index.js";
+
+  // Minimal surface of @gcorevideo/player's Player used by this plugin. The
+  // real types come from the remote ES module loaded at runtime; we only model
+  // the bits we call.
+  interface GCorePlayer {
+    attachTo(element: HTMLElement): void;
+    play(): void;
+    pause(): void;
+    seek(time: number): void;
+    setVolume(volume: number): void;
+    getVolume(): number;
+    getDuration(): number;
+    mute(): void;
+    unmute(): void;
+    isMuted(): boolean;
     on(event: string, handler: (e: unknown) => void): void;
-    method(opt: { name: string; [key: string]: unknown }): void;
-    removeAllListeners(): void;
+    destroy(): void;
+  }
+
+  interface GCorePlayerConstructor {
+    new (config: unknown): GCorePlayer;
+    registerPlugin(plugin: unknown): void;
+  }
+
+  // PlayerEvent enum values from @gcorevideo/player, inlined as string literals
+  // so we don't depend on the enum being re-exported by the runtime bundle.
+  const PlayerEvent = {
+    Play: "play",
+    Pause: "pause",
+    Ended: "ended",
+    Error: "error",
+    Ready: "ready",
+    TimeUpdate: "timeupdate",
+    VolumeUpdate: "volumeupdate",
+  } as const;
+
+  // Shared, lazily-resolved module load. The remote build is an ES module with
+  // named exports and no global, so we reach the Player constructor via a
+  // dynamic import(). The browser module registry dedupes this against the
+  // <script type="module"> that AddRemoteScriptDependency injects, so the
+  // module is fetched and evaluated only once. Awaiting it before attachTo()
+  // also guarantees Construct has already mounted our container <div>.
+  let gcorePlayerPromise: Promise<GCorePlayerConstructor> | null = null;
+  function loadGCorePlayer(): Promise<GCorePlayerConstructor> {
+    if (gcorePlayerPromise === null) {
+      gcorePlayerPromise = import(GCORE_PLAYER_URL).then((mod) => {
+        const Player = mod["Player"] as GCorePlayerConstructor | undefined;
+        if (!Player) {
+          throw new Error("GCore Player export not found");
+        }
+        // SourceController drives manifest selection/transport; MediaControl is
+        // the documented minimal companion plugin. Registration is global, so
+        // it only needs to happen once for all element handlers.
+        if (mod["SourceController"]) {
+          Player.registerPlugin(mod["SourceController"]);
+        }
+        if (mod["MediaControl"]) {
+          Player.registerPlugin(mod["MediaControl"]);
+        }
+        return Player;
+      });
+    }
+    return gcorePlayerPromise;
   }
 
   class ElementHandler {
-    element: HTMLIFrameElement;
+    element: HTMLElement;
     elementId: number;
     handler: IDOMElementHandler;
-    gplayerAPI: GPlayerAPI | null;
-    isInitialized: boolean;
+    player: GCorePlayer | null;
+    currentUrl: string;
     controller: AbortController;
 
     constructor(
-      element: HTMLIFrameElement,
+      element: HTMLElement,
       elementId: number,
       domHandler: IDOMElementHandler
     ) {
       this.element = element;
       this.elementId = elementId;
       this.handler = domHandler;
-      this.gplayerAPI = null;
-      this.isInitialized = false;
+      this.player = null;
+      this.currentUrl = "";
       this.controller = new AbortController();
 
       this.Setup();
@@ -32,17 +93,13 @@
 
     Setup() {
       const { signal } = this.controller;
-      this.element.addEventListener("error", (e) => this.OnIFrameError(e), {
-        signal,
-      });
-      this.element.addEventListener("load", () => this.OnLoad(), { signal });
 
+      // Keep player interactions inside the element so they don't leak into the
+      // Construct game's input handling.
       const interactiveEvents = [
         "touchstart",
         "touchmove",
         "touchend",
-        "mousedown",
-        "mouseup",
         "mousedown",
         "mouseup",
         "keydown",
@@ -56,7 +113,6 @@
       this.element.style.position = "absolute";
       this.element.style.border = "none";
       this.element.style.pointerEvents = "none";
-      this.element.allow = "autoplay; encrypted-media";
     }
 
     PostToRuntime(event: string, data?: JSONValue) {
@@ -71,21 +127,6 @@
       this.PostToRuntime("error", { error: { category, message } });
     }
 
-    OnLoad() {
-      if (this.element.src !== "") {
-        if (this.gplayerAPI === null) {
-          console.log("iframe loaded", this.element.src);
-          this.CreatePlayer();
-          console.log("Player created", this.gplayerAPI);
-        }
-      }
-    }
-
-    OnIFrameError(e: ErrorEvent) {
-      console.error("GCore IFrame error", e);
-      this.PostErrorToRuntime("iframe", `Error loading ${this.element.src}`);
-    }
-
     UpdateState(e: JSONObject) {
       let url = (e["url"] ?? "") as string;
       const language = (e["subtitles"] ?? "off") as string;
@@ -98,191 +139,162 @@
           url += (url.includes("?") ? "&" : "?") + "no_low_latency";
         }
       }
-      if (this.element.src !== url) {
-        let playerState = "offline";
+      if (this.currentUrl !== url) {
+        this.currentUrl = url;
         if (url !== "") {
           console.debug("Loading", url);
-          playerState = "loading";
+          this.PostStateToRuntime({ playerState: "loading" });
+          this.CreatePlayer(url);
         } else {
           console.debug("Offloading video player");
           this.DestroyPlayer();
+          this.PostStateToRuntime({ playerState: "offline" });
         }
-        this.element.src = url;
-        this.PostStateToRuntime({ playerState });
       }
     }
-    CreatePlayer() {
-      console.log("Setting up new player");
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const GCorePlayer = (globalThis as any)["GcorePlayer"];
-      
-      if ( GCorePlayer && GCorePlayer["gplayerAPI"] ) {
-        // Initialize the player
-        const api = GCorePlayer["gplayerAPI"];
-        this.gplayerAPI = new api(this.element);
-      } else {
-        console.error("[video player] GcorePlayer or gplayerAPI not found");
-        throw new Error("GCore Player API not found");
+    async CreatePlayer(url: string) {
+      console.log("Setting up new player", url);
+
+      let Player: GCorePlayerConstructor;
+      try {
+        Player = await loadGCorePlayer();
+      } catch (err) {
+        console.error("[video player] Failed to load GCore player", err);
+        this.PostErrorToRuntime("gcore", `Failed to load player: ${err}`);
+        return;
       }
 
-      this.gplayerAPI!["on"]("error", (err) => {
+      // A later UpdateState() may have changed or cleared the URL while we
+      // awaited the module load; bail if this request is stale.
+      if (this.currentUrl !== url) {
+        return;
+      }
+
+      this.DestroyPlayer();
+
+      const player = new Player({
+        autoPlay: true,
+        mute: true,
+        sources: [{ source: url, mimeType: this.GetMimeType(url) }],
+      });
+      this.player = player;
+      this.RegisterEvents(player);
+      player.attachTo(this.element);
+      console.log("Player created", player);
+    }
+
+    GetMimeType(url: string) {
+      // GCore manifest endpoints: .mpd is DASH, otherwise assume HLS (.m3u8).
+      // Progressive/direct-file sources are not supported by this plugin.
+      const path = url.split("?")[0].toLowerCase();
+      if (path.endsWith(".mpd")) {
+        return "application/dash+xml";
+      }
+      return "application/x-mpegurl";
+    }
+
+    RegisterEvents(player: GCorePlayer) {
+      player.on(PlayerEvent.Error, (err) => {
         console.error("VideoPlayer API Error", err);
-        this.PostErrorToRuntime("gcore", err as string);
+        const errObj = err as { message?: string } | null | undefined;
+        const message = errObj?.message ?? String(err);
+        this.PostErrorToRuntime("gcore", message);
       });
 
-      this.gplayerAPI!["on"]("play", () => {
+      player.on(PlayerEvent.Play, () => {
         console.log("[video player]", "Playing");
+        this.PostStateToRuntime({ playerState: "playing" });
+      });
 
-        if (this.isInitialized) {
-          this.PostStateToRuntime({
-            playerState: "playing",
-          });
-        } else {
-          // Sequence that load the video and ensure the state is ready.
-          // Also seems to avoid the fullscreen pop on iOS, sometimes...
-          this.OnPause();
-          this.GetDuration();
-          this.GetVolume();
+      player.on(PlayerEvent.Pause, () => {
+        console.log("[video player]", "Paused");
+        this.PostStateToRuntime({ playerState: "paused" });
+      });
+
+      player.on(PlayerEvent.TimeUpdate, (e) => {
+        const current = (e as { current?: number }).current;
+        if (typeof current === "number") {
+          this.PostStateToRuntime({ currentPlaybackTime: current });
         }
       });
 
-      this.gplayerAPI!["on"]("pause", () => {
-        console.log("[video player]", "Paused");
-        this.isInitialized = true;
+      player.on(PlayerEvent.VolumeUpdate, () => {
         this.PostStateToRuntime({
-          playerState: "paused",
+          currentVolume: player.isMuted() ? 0 : player.getVolume(),
         });
       });
 
-      this.gplayerAPI!["on"]("timeupdate", (e) => {
-        this.PostStateToRuntime({
-          currentPlaybackTime: (e as { current: number }).current,
-        });
-      });
-
-      this.gplayerAPI!["on"]("volumeupdate", (e) => {
-        console.log("[video player] Volume updated", e);
-
-        this.PostStateToRuntime({
-          currentVolume: e as number,
-        });
-      });
-
-      this.gplayerAPI!["on"]("ended", () => {
+      player.on(PlayerEvent.Ended, () => {
         console.log("[video player]", "Ended");
-
-        this.PostStateToRuntime({
-          playerState: "ended",
-        });
+        this.PostStateToRuntime({ playerState: "ended" });
       });
 
-      this.gplayerAPI!["on"]("ready", () => {
+      player.on(PlayerEvent.Ready, () => {
         console.log("[video player]", "Ready");
-
-        this.isInitialized = false;
-
-        // Actually load the video for the first time.
-        this.OnPlay();
+        // Methods are synchronous in the new API, so report duration and volume
+        // directly; the runtime marks the player ready once both are known.
+        this.PostStateToRuntime({
+          duration: player.getDuration(),
+          currentVolume: player.isMuted() ? 0 : player.getVolume(),
+        });
       });
     }
+
     DestroyPlayer() {
-      if (this.gplayerAPI) {
-        this.gplayerAPI!["removeAllListeners"]();
-        this.gplayerAPI = null;
+      if (this.player) {
+        try {
+          this.player.destroy();
+        } catch (e) {
+          console.warn("[video player] destroy failed", e);
+        }
+        this.player = null;
       }
     }
+
     Destroy() {
       // remove event listeners
       this.controller.abort();
-      this.element.src = "";
+      this.currentUrl = "";
       this.DestroyPlayer();
     }
 
     OnPlay() {
       console.log("[video player] Play requested");
-      this.gplayerAPI!["method"]({ name: "play" });
+      this.player?.play();
     }
 
     OnPause() {
       console.log("[video player] Pause requested");
-      this.gplayerAPI!["method"]({ name: "pause" });
+      this.player?.pause();
     }
 
     OnSeek(state: JSONObject) {
-      console.log("[video player] Seek requested", state.requestedPlaybackTime);
-      if (state.requestedPlaybackTime) {
-        this.gplayerAPI!["method"]({
-          name: "seek",
-          params: state.requestedPlaybackTime,
-        });
+      const time = state["requestedPlaybackTime"];
+      console.log("[video player] Seek requested", time);
+      if (typeof time === "number") {
+        this.player?.seek(time);
       }
     }
 
     OnSetVolume(state: JSONObject) {
-      console.log("[video player] Set volume requested", state.requestedVolume);
-      if (state.requestedVolume) {
-        this.gplayerAPI!["method"]({
-          name: "setVolume",
-          params: state.requestedVolume,
-        });
+      const volume = state["requestedVolume"];
+      console.log("[video player] Set volume requested", volume);
+      if (typeof volume === "number") {
+        this.player?.setVolume(volume);
       }
     }
 
     OnMute() {
       console.log("[video player]", "Mute requested");
-      this.gplayerAPI!["method"]({
-        name: "mute",
-        callback: () => {
-          console.log("[video player]", "Muted");
-
-          this.PostStateToRuntime({
-            audioState: "muted",
-          });
-        },
-      });
+      this.player?.mute();
+      this.PostStateToRuntime({ audioState: "muted" });
     }
 
     OnUnmute() {
       console.log("[video player]", "Unmute requested");
-      this.gplayerAPI!["method"]({
-        name: "unmute",
-        callback: () => {
-          console.log("[video player]", "Unmuted");
-
-          this.PostStateToRuntime({
-            audioState: "unmuted",
-          });
-        },
-      });
-    }
-
-    GetDuration() {
-      console.log("[video player]", "Current duration requested");
-      this.gplayerAPI!["method"]({
-        name: "getDuration",
-        callback: (res: number) => {
-          console.log("[video player] Duration", res);
-
-          this.PostStateToRuntime({
-            duration: res,
-          });
-        },
-      });
-    }
-
-    GetVolume() {
-      console.log("[video player]", "Current volume requested");
-      this.gplayerAPI!["method"]({
-        name: "getVolume",
-        callback: (res: number) => {
-          console.log("[video player] Current volume", res);
-
-          this.PostStateToRuntime({
-            currentVolume: res,
-          });
-        },
-      });
+      this.player?.unmute();
+      this.PostStateToRuntime({ audioState: "unmuted" });
     }
   }
 
