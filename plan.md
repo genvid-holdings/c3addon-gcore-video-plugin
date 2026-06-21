@@ -1,77 +1,61 @@
-# Plan: Port GCore video plugin to the new `@gcorevideo/player` v2 API
+# Plan: Migrate CI/CD from CircleCI to GitHub Actions
 
-Branch: `BUR-0000-port-player-api-v2`
+Tracks GitHub issue #2. Replaces CircleCI with GitHub Actions and moves
+distribution of the `.c3addon` from Azure Blob Storage to **GitHub Releases**.
 
-## Problem
+Branch: `BUR-0000-migrate-ci-github-actions` (base: `main`).
 
-The old GCore embed API (`https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js`)
-is broken. `src/plugin.ts` already points the remote dependency at the new build
-(`https://player.gvideo.co/v2/assets/latest/index.js`), but the DOM-side
-integration in `src/c3runtime/dom/ElementHandler.ts` still speaks the old,
-now-nonexistent API. The plugin must be ported to the new API with the same
-functionality and the minimal footprint.
+## Design decisions (locked)
 
-## API differences
+| Decision | Choice |
+|---|---|
+| Distribution target | **GitHub Release asset** — drop Azure Blob, the Azure service principal, and 1Password entirely |
+| Upload scope | **Tags only**; PR + main CI is secret-free |
+| Auth | Built-in **`GITHUB_TOKEN`** with `contents: write` — no external secrets anywhere |
+| Tag convention | **Keep digit-first** (`1.1.0.0`, `1.0.1.0`, …); GH glob `'[0-9]*.[0-9]*.*'` — equivalent of the old `/\d+\..*/` filter |
+| Node | **22.14** (unchanged) |
+| Release tool | `gh release create "$GITHUB_REF_NAME" Genvidtech_GCoreVideoPlugin.c3addon --generate-notes` (gh CLI is preinstalled on the runner; no third-party action) |
 
-| Concern | Old (broken) | New (`@gcorevideo/player`) |
-|---|---|---|
-| Access | `globalThis.GcorePlayer.gplayerAPI` global | ESM-only named exports, **no global** |
-| DOM | `new gplayerAPI(iframe)`, set `iframe.src` | `new Player({sources})` + `player.attachTo(div)` |
-| Events | `.on("play"/"pause"/"timeupdate"/...)` | `player.on(PlayerEvent.X, …)` |
-| Commands | `.method({name,params,callback})` (async) | direct sync `play/pause/seek/setVolume/getVolume/mute/unmute/getDuration` |
-| timeupdate | `{current}` | `{current, total}` |
-| Teardown | `.removeAllListeners()` | `.destroy()` |
+**Implication to flag in the PR:** consumers who previously pulled the addon from
+the Azure `c3addons` container must switch to the GitHub Releases page.
 
-## Key insight — minimal footprint
+## Workflows
 
-The runtime side (`instance.ts`, `actions.ts`, `conditions.ts`, `expressions.ts`)
-and the `domSide.ts` message bridge talk to the DOM side through a generic,
-API-agnostic message protocol. None of that changes. All GCore API coupling
-lives in `ElementHandler.ts`. Total footprint: 3 files (+ the pre-existing
-plugin.ts URL swap and SDK/lockfile bumps).
+### `.github/workflows/ci.yml` — fast feedback, no secrets
+- Triggers: `pull_request` and push to `main`.
+- Steps: `actions/checkout` → `actions/setup-node` (Node 22.14, npm cache) →
+  `npm ci` → `npm run lint` → `npm run build` → `npm run zip:linux` →
+  `actions/upload-artifact` uploading `Genvidtech_GCoreVideoPlugin.c3addon`
+  (so reviewers can download a build per PR).
+- No secrets, no `permissions` escalation.
 
-## Decisions
+### `.github/workflows/release.yml` — tag-triggered, publishes a Release
+- Trigger: `push` of a tag matching `'[0-9]*.[0-9]*.*'`.
+- `permissions: contents: write` (for creating the release / uploading assets).
+- Steps: checkout → setup-node (22.14) → `npm ci` → `npm run lint` →
+  `npm run build` → `npm run zip:linux` →
+  `gh release create "$GITHUB_REF_NAME" Genvidtech_GCoreVideoPlugin.c3addon --generate-notes`
+  with `env: GH_TOKEN: ${{ github.token }}`.
 
-- **Autoplay:** muted autoplay (`mute:true, autoPlay:true`); the game unmutes via
-  the existing Unmute action. Preserves old auto-play-on-load behavior, avoids
-  browser autoplay blocks.
-- **Scope:** strictly minimal — restore function. Subtitles / no-low-latency kept
-  as the existing `?sub_lang=` / `no_low_latency` URL query params. Proper
-  Subtitles-plugin support is a noted follow-up.
-- **Module loading:** dependency declared `AddRemoteScriptDependency(url, "module")`
-  (classic `<script>` can't parse ESM). Game-side `ElementHandler.ts` reaches the
-  `Player` reference via a cached dynamic `import()` of the same URL (module
-  registry dedupes). The `await` on that import also defers `attachTo` until after
-  Construct has mounted the div (there is no iframe `load` event anymore).
+## Tasks (each one commit; validator gate before every commit)
 
-## Tasks
+- **Prep** — commit `plan.md`.
+- **Task 1** — add `.github/workflows/ci.yml`. (`genvid-dev:ts-implementer`)
+- **Task 2** — add `.github/workflows/release.yml`. (`genvid-dev:ts-implementer`)
+- **Task 3** — remove `.circleci/config.yml`; add a brief "CI/CD on GitHub
+  Actions / download the addon from Releases" note to the README/docs.
+  (`genvid-dev:tech-writer`)
+- Run `genvid-dev:code-reviewer` at the end.
 
-1. **(prep)** Save `plan.md`.
-2. `src/plugin.ts`: add `"module"` type to `AddRemoteScriptDependency`. Commit
-   together with the pre-existing SDK submodule + package-lock bumps.
-3. `src/c3runtime/domSide.ts` + `src/c3runtime/dom/ElementHandlerMap.ts`:
-   create a `<div>` instead of `<iframe>`; `HTMLIFrameElement` → `HTMLElement`.
-4. `src/c3runtime/dom/ElementHandler.ts`: full rewrite.
-   - Module-scope cached loader: `import(url)` → register `SourceController` +
-     `MediaControl` once → resolve `{ Player, PlayerEvent }`.
-   - `CreatePlayer(url)` (async): derive `mimeType` from path
-     (`.mpd` → `application/dash+xml`, else `application/x-mpegurl`),
-     `new Player({autoPlay:true, mute:true, sources:[{source:url, mimeType}]})`,
-     register events, `attachTo(this.element)`.
-   - Events: `Play`→playing, `Pause`→paused, `Ended`→ended,
-     `TimeUpdate`→`{currentPlaybackTime:current}`,
-     `VolumeUpdate`→`{currentVolume: isMuted()?0:getVolume()}`,
-     `Error`→error, `Ready`→post `getDuration()` + volume.
-   - Methods: direct sync calls; `OnMute`/`OnUnmute` still post `audioState`;
-     `DestroyPlayer` → `player.destroy()`.
-   - Track `currentUrl` (replaces old `iframe.src` comparison).
+## Verification
 
-## Gate
+- Project gate `npm run lint && npm run build` passes locally before each commit.
+- Workflow correctness verified by the PR's own `ci.yml` run going green.
+- Release path verified after merge by pushing a test digit-version tag (or
+  `workflow_dispatch`) and confirming the Release + attached `.c3addon`.
 
-`npm run lint && npm run build`, then `genvid-dev:code-reviewer`.
+## Risks
 
-## Flagged for runtime verification (not blockers)
-
-- `TimeUpdate` payload assumed `{current, total}`; `Error` assumed `{message, code}`.
-- `setVolume` range is `0..1` in the new API (passed through from the existing ACE).
-- Subtitle `?sub_lang=` / `no_low_latency` query params honored by the manifest endpoint.
+- Workflow YAML isn't validated locally (no `actionlint` configured) — verified
+  by the live PR run.
+- Tag glob must match the existing 4-part tags — covered by `'[0-9]*.[0-9]*.*'`.
