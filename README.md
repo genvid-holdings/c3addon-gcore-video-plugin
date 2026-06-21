@@ -23,7 +23,7 @@ Because of the restricted CSP in Construct3, make sure to use http://localhost:8
 npm run all:{platform}
 ```
 
-where platform is either `windows` or `posix`.
+where platform is either `windows` or `linux`.
 
 ## CI/CD
 
