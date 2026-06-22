@@ -51,7 +51,6 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 
 		const properties = this._getInitProperties();
 
-		console.log('debug properties', properties)
 		if (properties) {
 			this._url = (properties[0] ?? "") as string;
 			this._subtitles = (properties[1] ?? "off") as string;

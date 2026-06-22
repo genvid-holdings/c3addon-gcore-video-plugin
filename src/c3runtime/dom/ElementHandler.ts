@@ -582,31 +582,16 @@
         }
         this.PostStateToRuntime(state);
 
-        // Poll DVR window on each TimeUpdate — the live DVR window grows over
-        // time, so we need to refresh it periodically. Only post when something
-        // changed to avoid spamming the bridge (mirror lastReportedLevel approach).
-        {
-          const ap = player.player?.core?.activePlayback;
-          const isDvr = ap?.dvrEnabled ?? false;
-          const apAny = ap as unknown as Record<string, unknown> | undefined;
-          const start =
-            typeof apAny?.["_playableRegionStartTime"] === "number"
-              ? (apAny["_playableRegionStartTime"] as number)
-              : 0;
-          const dur =
-            typeof apAny?.["_playableRegionDuration"] === "number"
-              ? (apAny["_playableRegionDuration"] as number)
-              : -1;
-          const seekableStart = start;
-          const seekableEnd = dur >= 0 ? start + dur : -1;
-          if (
-            isDvr !== this.lastDvr.isDvr ||
-            seekableStart !== this.lastDvr.seekableStart ||
-            seekableEnd !== this.lastDvr.seekableEnd
-          ) {
-            this.lastDvr = { isDvr, seekableStart, seekableEnd };
-            this.PostStateToRuntime({ isDvr, seekableStart, seekableEnd });
-          }
+        // Poll the DVR window on each TimeUpdate — the live window grows over
+        // time. Only post when it changed to avoid spamming the bridge.
+        const dvr = this.ReadDvrState(player);
+        if (
+          dvr.isDvr !== this.lastDvr.isDvr ||
+          dvr.seekableStart !== this.lastDvr.seekableStart ||
+          dvr.seekableEnd !== this.lastDvr.seekableEnd
+        ) {
+          this.lastDvr = dvr;
+          this.PostStateToRuntime(dvr);
         }
       });
 
@@ -674,19 +659,16 @@
       this.PostStateToRuntime(state);
     }
 
-    // Read DVR state from the underlying Clappr playback and post it to the
-    // runtime. `dvrEnabled` is a public boolean getter (false on VOD).
-    // The seekable-window boundaries live in PRIVATE fields with no public
-    // accessor — we read them defensively through a loose cast.
+    // Read DVR state from the underlying Clappr playback. `dvrEnabled` is a
+    // public boolean getter (false on VOD). The seekable-window boundaries live
+    // in PRIVATE fields with no public accessor — we read them defensively
+    // through a loose cast.
     //
     // IMPORTANT: The private-field reads (_playableRegionStartTime,
     // _playableRegionDuration) are fragile and pending verification against a
     // real DVR stream (docs/gcore-player-api.md A6). They may break on a future
     // player update.
-    //
-    // Also updates `lastDvr` so that the TimeUpdate suppression logic stays in
-    // sync after an unconditional post (e.g. from the Ready handler).
-    private PostDvrState(player: GCorePlayer) {
+    private ReadDvrState(player: GCorePlayer): { isDvr: boolean; seekableStart: number; seekableEnd: number } {
       const ap = player.player?.core?.activePlayback;
       const isDvr = ap?.dvrEnabled ?? false;
 
@@ -701,11 +683,15 @@
         typeof apAny?.["_playableRegionDuration"] === "number"
           ? (apAny["_playableRegionDuration"] as number)
           : -1;
-      const seekableStart = start;
-      const seekableEnd = dur >= 0 ? start + dur : -1;
+      return { isDvr, seekableStart: start, seekableEnd: dur >= 0 ? start + dur : -1 };
+    }
 
-      this.lastDvr = { isDvr, seekableStart, seekableEnd };
-      this.PostStateToRuntime({ isDvr, seekableStart, seekableEnd });
+    // Post the current DVR state unconditionally (used from Ready). Also updates
+    // `lastDvr` so the TimeUpdate change-suppression stays in sync.
+    private PostDvrState(player: GCorePlayer) {
+      const dvr = this.ReadDvrState(player);
+      this.lastDvr = dvr;
+      this.PostStateToRuntime(dvr);
     }
 
     DestroyPlayer() {
