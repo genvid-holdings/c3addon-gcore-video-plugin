@@ -188,7 +188,7 @@
       // noLowLatency no longer maps to a URL param under the v2 player; proper
       // low-latency config is a follow-up (GitHub issue #1).
 
-      if (this.currentUrl !== url) {
+      if (this.NeedsRebuild({ url })) {
         this.currentUrl = url;
         if (url !== "") {
           console.debug("Loading", url);
@@ -204,6 +204,35 @@
         // the existing player without rebuilding it.
         this.ApplySubtitles();
       }
+    }
+
+    // Central seam for deciding whether an incoming state update requires
+    // tearing down and rebuilding the player. Future config toggles (quality
+    // level, latency mode, etc.) extend this by adding fields to `next` and
+    // comparing them against current state here.
+    private NeedsRebuild(next: { url: string }): boolean {
+      return this.currentUrl !== next.url;
+    }
+
+    // Constructs the config object passed to the Player constructor. Reads
+    // current instance state (e.g. lastMuted) and the resolved manifest URL.
+    // Extracted as a seam so future slices can layer construction-time config
+    // (quality, latency, etc.) in one place without touching CreatePlayer.
+    private BuildPlayerConfig(manifestUrl: string): unknown {
+      return {
+        autoPlay: true,
+        // Only the first autoplay needs forced mute; subsequent loads keep the
+        // user's mute state.
+        mute: this.lastMuted,
+        sources: [{ source: manifestUrl, mimeType: this.GetMimeType(manifestUrl) }],
+        playback: {
+          // The player defaults hls.js to non-native subtitle rendering, whose
+          // custom renderer doesn't display our selected track. Force native
+          // text-track rendering so the browser renders cues for the track we
+          // mark "showing" via closedCaptionsTrackId. hlsjsConfig takes priority.
+          hlsjsConfig: { renderTextTracksNatively: true },
+        },
+      };
     }
 
     async CreatePlayer(url: string) {
@@ -245,20 +274,7 @@
       this.playbackStable = false;
       this.playbackBaseline = -1;
 
-      const player = new Player({
-        autoPlay: true,
-        // Only the first autoplay needs forced mute; subsequent loads keep the
-        // user's mute state.
-        mute: this.lastMuted,
-        sources: [{ source: manifestUrl, mimeType: this.GetMimeType(manifestUrl) }],
-        playback: {
-          // The player defaults hls.js to non-native subtitle rendering, whose
-          // custom renderer doesn't display our selected track. Force native
-          // text-track rendering so the browser renders cues for the track we
-          // mark "showing" via closedCaptionsTrackId. hlsjsConfig takes priority.
-          hlsjsConfig: { renderTextTracksNatively: true },
-        },
-      });
+      const player = new Player(this.BuildPlayerConfig(manifestUrl));
       this.player = player;
       this.RegisterEvents(player);
       player.attachTo(this.element);
