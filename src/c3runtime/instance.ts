@@ -18,7 +18,7 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 	_url: string = "";
 	_subtitles: string = "";
 	_noLowLatency: boolean = false;
-	_enableChrome: boolean = false;
+	_enableChrome: boolean = true;
 	_enableDvr: boolean = false;
 	_fallbackUrls: string[] = [];
 	_subtitleSources: Array<{ url: string; language: string; label: string }> = [];
@@ -55,7 +55,7 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 			this._url = (properties[0] ?? "") as string;
 			this._subtitles = (properties[1] ?? "off") as string;
 			this._noLowLatency = (properties[2] ?? false) as boolean;
-			this._enableChrome = (properties[3] ?? false) as boolean;
+			this._enableChrome = (properties[3] ?? true) as boolean;
 			this._enableDvr = (properties[4] ?? false) as boolean;
 		}
 
@@ -367,7 +367,7 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 		this._url = (o["url"] ?? "") as string;
 		this._subtitles = (o["subtitles"] ?? "off") as string;
 		this._noLowLatency = (o["noLowLatency"] ?? false) as boolean;
-		this._enableChrome = (o["enableChrome"] ?? false) as boolean;
+		this._enableChrome = (o["enableChrome"] ?? true) as boolean;
 		this._enableDvr = (o["enableDvr"] ?? false) as boolean;
 		this._fallbackUrls = (o["fallbackUrls"] ?? []) as string[];
 		this._subtitleSources = (o["subtitleSources"] ?? []) as Array<{ url: string; language: string; label: string }>;
