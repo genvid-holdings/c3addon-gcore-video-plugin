@@ -194,6 +194,25 @@
 							}
 						}
 					},
+					"add-subtitle-source": {
+						"list-name": "Add Subtitle Source",
+						"display-text": "Add subtitle source {0} (language {1}, label {2})",
+						"description": "Add an external subtitle track (by URL) to the player. These are injected at construction time alongside any in-manifest subtitle tracks. Call before SetURL/LoadVideo takes effect.",
+						"params": {
+							"url": {
+								"name": "URL",
+								"desc": "URL of the external subtitle file (e.g. a .vtt file)."
+							},
+							"language": {
+								"name": "Language",
+								"desc": "BCP-47 language code for the track (e.g. \"en\", \"fr\")."
+							},
+							"label": {
+								"name": "Label",
+								"desc": "Human-readable label shown in the subtitle selector (e.g. \"English\")."
+							}
+						}
+					},
 					"resize": {
 						"list-name": "Resize",
 						"display-text": "Resize player to container",
@@ -267,7 +286,8 @@
 					"lastErrorMessage": "Last Error Message",
 					"currentQuality": "Current Quality Level",
 					"qualityCount": "Quality Level Count",
-					"fallbackUrls": "Fallback URL Count"
+					"fallbackUrls": "Fallback URL Count",
+					"subtitleSources": "External Subtitle Source Count"
 				}
 			}
 		}

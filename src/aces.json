@@ -149,6 +149,24 @@
 				]
 			},
 			{
+				"id": "add-subtitle-source",
+				"scriptName": "AddSubtitleSource",
+				"params": [
+					{
+						"id": "url",
+						"type": "string"
+					},
+					{
+						"id": "language",
+						"type": "string"
+					},
+					{
+						"id": "label",
+						"type": "string"
+					}
+				]
+			},
+			{
 				"id": "resize",
 				"scriptName": "Resize"
 			}

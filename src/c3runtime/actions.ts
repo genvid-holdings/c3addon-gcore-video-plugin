@@ -36,6 +36,9 @@ C3.Plugins.Genvidtech_GCoreVideoPlugin.Acts = {
 	SetFallbackURLs(this:SDKInstanceClass, urls: string) {
 		this._SetFallbackURLs(urls);
 	},
+	AddSubtitleSource(this:SDKInstanceClass, url: string, language: string, label: string) {
+		this._AddSubtitleSource(url, language, label);
+	},
 	Resize(this: SDKInstanceClass) {
 		this._Resize();
 	}

@@ -20,6 +20,7 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 	_noLowLatency: boolean = false;
 	_enableChrome: boolean = false;
 	_fallbackUrls: string[] = [];
+	_subtitleSources: Array<{ url: string; language: string; label: string }> = [];
 	_isInitialized = false;
 	_isReady = false;
 
@@ -69,7 +70,8 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 			"subtitles": this._subtitles,
 			"noLowLatency": this._noLowLatency,
 			"enableChrome": this._enableChrome,
-			"fallbackUrls": this._fallbackUrls
+			"fallbackUrls": this._fallbackUrls,
+			"subtitleSources": this._subtitleSources
 		};
 	}
 
@@ -235,6 +237,11 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 		return this._url;
 	}
 
+	_AddSubtitleSource(url: string, language: string, label: string) {
+		this._subtitleSources = [...this._subtitleSources, { url, language, label }];
+		this._updateElementState();
+	}
+
 	_SetFallbackURLs(urls: string) {
 		const parsed = urls.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
 		// Only update and trigger a state refresh if the list actually changed.
@@ -296,7 +303,8 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 			"subtitles": this._subtitles,
 			"noLowLatency": this._noLowLatency,
 			"enableChrome": this._enableChrome,
-			"fallbackUrls": this._fallbackUrls
+			"fallbackUrls": this._fallbackUrls,
+			"subtitleSources": this._subtitleSources
 		};
 	}
 
@@ -307,6 +315,7 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 		this._noLowLatency = (o["noLowLatency"] ?? false) as boolean;
 		this._enableChrome = (o["enableChrome"] ?? false) as boolean;
 		this._fallbackUrls = (o["fallbackUrls"] ?? []) as string[];
+		this._subtitleSources = (o["subtitleSources"] ?? []) as Array<{ url: string; language: string; label: string }>;
 
 		this._updateElementState();		// ensures any state changes are updated in the DOM
 	}
@@ -324,6 +333,7 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 					{ name: prefix + "noLowLatency", value: this._noLowLatency, onedit: v => this._SetNoLowLatency(v as boolean) },
 					{ name: prefix + "enableChrome", value: this._enableChrome, onedit: v => this._SetEnableChrome(v as boolean) },
 					{ name: prefix + "fallbackUrls", value: this._fallbackUrls.length },
+					{ name: prefix + "subtitleSources", value: this._subtitleSources.length },
 					{ name: prefix + "playbackTime", value: this._currentPlaybackTime, onedit: v => this._SetPlaybackTime(v as number) },
 					{ name: prefix + "volume", value: this._currentVolume, onedit: v => this._SetVolume(v as number) },
 					{ name: prefix + "duration", value: this._duration },

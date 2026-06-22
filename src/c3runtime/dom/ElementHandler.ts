@@ -131,6 +131,7 @@
     noLowLatency: boolean;
     enableChrome: boolean;
     fallbackUrls: string[];
+    subtitleSources: Array<{ url: string; language: string; label: string }>;
     // Track the last quality level reported to the runtime so we only post
     // currentQuality on a TimeUpdate when it actually changed (no quality event).
     lastReportedLevel: number;
@@ -155,6 +156,7 @@
       this.noLowLatency = false;
       this.enableChrome = false;
       this.fallbackUrls = [];
+      this.subtitleSources = [];
       this.lastReportedLevel = -2; // sentinel: "not yet reported"
       this.resizeObserver = null;
       this.controller = new AbortController();
@@ -214,10 +216,12 @@
       const noLowLatency = (e["noLowLatency"] ?? false) as boolean;
       this.enableChrome = (e["enableChrome"] ?? false) as boolean;
       const fallbackUrls = (e["fallbackUrls"] ?? []) as string[];
+      const subtitleSources = (e["subtitleSources"] ?? []) as Array<{ url: string; language: string; label: string }>;
 
-      if (this.NeedsRebuild({ url, noLowLatency, fallbackUrls })) {
+      if (this.NeedsRebuild({ url, noLowLatency, fallbackUrls, subtitleSources })) {
         this.noLowLatency = noLowLatency;
         this.fallbackUrls = fallbackUrls;
+        this.subtitleSources = subtitleSources;
         this.currentUrl = url;
         if (url !== "") {
           console.debug("Loading", url);
@@ -242,13 +246,14 @@
     // (latency mode, etc.) extend this by adding fields to `next` and comparing
     // them against current state here. Subtitle-only changes take the light path
     // (no rebuild) — they are applied to the existing player via ApplySubtitles.
-    private NeedsRebuild(next: { url: string; noLowLatency: boolean; fallbackUrls: string[] }): boolean {
+    private NeedsRebuild(next: { url: string; noLowLatency: boolean; fallbackUrls: string[]; subtitleSources: Array<{ url: string; language: string; label: string }> }): boolean {
       if (this.currentUrl !== next.url) return true;
       // Construction-time config changes below are only meaningful when a URL is
       // set (no point rebuilding an idle player).
       if (next.url !== "") {
         if (this.noLowLatency !== next.noLowLatency) return true;
         if (JSON.stringify(this.fallbackUrls) !== JSON.stringify(next.fallbackUrls)) return true;
+        if (JSON.stringify(this.subtitleSources) !== JSON.stringify(next.subtitleSources)) return true;
       }
       return false;
     }
@@ -276,13 +281,32 @@
         hlsjsConfig.lowLatencyMode = false;
       }
 
+      // Side-loaded (API-injected) external subtitle tracks. Clappr's HTML5
+      // playback wires these via _setupExternalTracks(options.playback.externalTracks)
+      // at construction time, so they appear in closedCaptionsTracks alongside
+      // any in-manifest tracks — ApplySubtitles/SelectTextTrack then picks them
+      // up unchanged via the usual language-matching path.
+      //
+      // NOTE: The externalTracks shape { kind, src, label, lang } is pending
+      // verification against a real external .vtt (docs/gcore-player-api.md A4);
+      // the field name may need adjustment (e.g. `srclang` instead of `lang`).
+      const playback: Record<string, unknown> = { hlsjsConfig };
+      if (this.subtitleSources.length > 0) {
+        playback.externalTracks = this.subtitleSources.map((s) => ({
+          kind: "subtitles",
+          src: s.url,
+          label: s.label,
+          lang: s.language,
+        }));
+      }
+
       return {
         autoPlay: true,
         // Only the first autoplay needs forced mute; subsequent loads keep the
         // user's mute state.
         mute: this.lastMuted,
         sources,
-        playback: { hlsjsConfig },
+        playback,
       };
     }
 
