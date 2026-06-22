@@ -224,7 +224,9 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 	}
 
 	_SetNoLowLatency(noLowLatency?: boolean) {
-		noLowLatency = noLowLatency || false;
+		// Only default when the arg is actually absent (nullish); an explicit
+		// false must be preserved — mirrors the _SetURL handling.
+		noLowLatency = noLowLatency ?? false;
 		if (this._noLowLatency === noLowLatency)
 			return;
 
