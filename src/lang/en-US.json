@@ -327,11 +327,23 @@
 					},
 					"get-subtitle-language-at": {
 						"description": "The language code of the subtitle track at the given index.",
-						"translated-name": "GetSubtitleLanguageAt"
+						"translated-name": "GetSubtitleLanguageAt",
+						"params": {
+							"index": {
+								"name": "Index",
+								"desc": "Zero-based index into the subtitle track list (0 to GetSubtitleCount-1)."
+							}
+						}
 					},
 					"get-subtitle-label-at": {
 						"description": "The human-readable label of the subtitle track at the given index.",
-						"translated-name": "GetSubtitleLabelAt"
+						"translated-name": "GetSubtitleLabelAt",
+						"params": {
+							"index": {
+								"name": "Index",
+								"desc": "Zero-based index into the subtitle track list (0 to GetSubtitleCount-1)."
+							}
+						}
 					}
 				},
 				"debugger": {
