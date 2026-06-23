@@ -105,6 +105,24 @@
     </div>
   </div>
 
+  <!-- ── D4: External (side-loaded) subtitles ────────────────────────── -->
+  <div class="probe-section">
+    <h3>D4 – External subtitle source (side-loaded VTT)</h3>
+    <div class="row">
+      <label>VTT URL: <input id="extVtt" type="text"
+        value="https://421804.gvideo.io/videos/421804_aRXqc20sxTTLovVV/segment-15-s0q234033v1.vtt" /></label>
+    </div>
+    <div class="row">
+      <label>lang: <input id="extLang" type="text" class="narrow" value="en-ext" /></label>
+      <label>field:
+        <select id="extField"><option value="lang">lang</option><option value="srclang">srclang</option></select>
+      </label>
+      <button id="reloadExt">Reload with external track</button>
+      <button id="dumpExt">Dump cc + &lt;video&gt; tracks</button>
+      <button id="showExtNative">Show ext track natively</button>
+    </div>
+  </div>
+
   <div class="row">
     <button id="log-clear">Clear log</button>
   </div>
@@ -332,6 +350,48 @@
       if (pb.currentLevel === undefined) { log("A8: currentLevel unavailable"); return; }
       pb.currentLevel = -1;
       log("A8 set currentLevel = -1 (auto); readback:", pb.currentLevel);
+    };
+
+    // ── D4: External subtitle source ───────────────────────────────────
+    function dumpExtTracks() {
+      log("--- D4 closedCaptionsTracks (hls.js) ---");
+      ccTracks().forEach((t, i) => log(`  cc[${i}] id=${t.id} name=${t.name} lang=${t.track?.language ?? t.language}`));
+      log("--- D4 <video>.textTracks (native) ---");
+      const v = document.querySelector("#player video");
+      if (v) [...v.textTracks].forEach((t, i) => log(`  vtt[${i}] kind=${t.kind} label=${t.label} lang=${t.language} mode=${t.mode} cues=${t.cues?.length ?? "null"}`));
+    }
+    document.getElementById("reloadExt").onclick = async () => {
+      const url = document.getElementById("url").value.trim();
+      const vtt = document.getElementById("extVtt").value.trim();
+      const lang = document.getElementById("extLang").value.trim() || "en-ext";
+      const field = document.getElementById("extField").value;
+      log("=== D4: Reload with external subtitle track ===");
+      if (!_mod) { log("D4: module not loaded — use Load first"); return; }
+      const { Player, MediaControl, SourceController, ClosedCaptions, Subtitles } = _mod;
+      [SourceController, MediaControl, ClosedCaptions].forEach((p) => { if (p) try { Player.registerPlugin(p); } catch (e) { /* already */ } });
+      if (Subtitles) { try { Player.registerPlugin(Subtitles); log("D4: registered Subtitles plugin"); } catch (e) { /* already */ } }
+      if (player) { try { player.destroy(); } catch (e) { /* ignore */ } player = null; }
+      const track = { kind: "subtitles", src: vtt, label: "External " + lang };
+      track[field] = lang;
+      const playbackCfg = { hlsjsConfig: { renderTextTracksNatively: true }, externalTracks: [track] };
+      log("D4 externalTracks (field=" + field + "):", JSON.stringify(playbackCfg.externalTracks));
+      player = new Player({ autoPlay: true, mute: true, sources: [{ source: url, mimeType: "application/x-mpegurl" }], playback: playbackCfg });
+      window.player = player;
+      attachErrorHandler();
+      player.on("ready", () => { log("D4 READY"); rebuildSubtitleButtons(); setTimeout(dumpExtTracks, 1800); });
+      player.attachTo(document.getElementById("player"));
+      log("D4: attached");
+    };
+    document.getElementById("dumpExt").onclick = dumpExtTracks;
+    document.getElementById("showExtNative").onclick = () => {
+      const v = document.querySelector("#player video");
+      if (!v) { log("D4: no video"); return; }
+      let shown = false;
+      [...v.textTracks].forEach((t) => {
+        if (t.language && t.language.includes("ext")) { t.mode = "showing"; shown = true; log("D4 set native textTrack showing:", t.label, t.language); }
+      });
+      if (!shown) log("D4: no ext native track found to show");
+      setTimeout(dumpExtTracks, 500);
     };
 
     // ── Shared helpers ─────────────────────────────────────────────────

@@ -299,9 +299,13 @@
       // any in-manifest tracks — ApplySubtitles/SelectTextTrack then picks them
       // up unchanged via the usual language-matching path.
       //
-      // NOTE: The externalTracks shape { kind, src, label, lang } is pending
-      // verification against a real external .vtt (docs/gcore-player-api.md A4);
-      // the field name may need adjustment (e.g. `srclang` instead of `lang`).
+      // VERIFIED (docs/gcore-player-api.md D4): the { kind, src, label, lang }
+      // shape loads correctly, BUT the resulting track is a native
+      // <video><track> only — it does NOT appear in hls.js closedCaptionsTracks.
+      // ApplySubtitles therefore selects external tracks via the native
+      // textTrack.mode (SetExternalTrackMode), not setTextTrack(). Use a language
+      // tag distinct from the in-manifest ones (e.g. "en-ext") so it isn't
+      // shadowed by an in-manifest track of the same language.
       const playback: Record<string, unknown> = { hlsjsConfig };
       if (this.subtitleSources.length > 0) {
         playback.externalTracks = this.subtitleSources.map((s) => ({
@@ -431,8 +435,22 @@
 
       if (lang === "off") {
         this.SelectTextTrack(playback, -1);
+        this.SetExternalTrackMode(null);
         return;
       }
+
+      // Side-loaded (API-injected) tracks are native <video><track> elements:
+      // they appear in <video>.textTracks but NOT in hls.js closedCaptionsTracks,
+      // so they're selected by toggling the native textTrack.mode rather than
+      // setTextTrack(). They exist from construction, so unlike in-manifest tracks
+      // they can be applied immediately (no playback-stable wait). Try them first.
+      const externalLangs = this.subtitleSources.map((s) => s.language.toLowerCase());
+      if (externalLangs.includes(lang)) {
+        this.SelectTextTrack(playback, -1); // clear any in-manifest selection
+        this.SetExternalTrackMode(lang);
+        return;
+      }
+
       if (!this.playbackStable) {
         // The TimeUpdate handler re-invokes ApplySubtitles once stable.
         return;
@@ -448,9 +466,34 @@
       if (!match) {
         console.warn("[video player] No subtitle track for", lang, "available:", tracks);
         this.SelectTextTrack(playback, -1);
+        this.SetExternalTrackMode(null);
         return;
       }
       this.SelectTextTrack(playback, match.id);
+      this.SetExternalTrackMode(null); // an in-manifest track won — hide externals
+    }
+
+    // Show the side-loaded external native textTrack whose language matches
+    // `targetLang` (lowercased), disabling our other external tracks. Pass null
+    // to disable all external tracks. Only touches tracks whose language is one
+    // of our subtitleSources languages, so hls.js-managed in-manifest native
+    // tracks are left under hls.js control (selected via setTextTrack).
+    private SetExternalTrackMode(targetLang: string | null) {
+      if (this.subtitleSources.length === 0) {
+        return;
+      }
+      const video = this.element.querySelector("video") as HTMLVideoElement | null;
+      if (!video) {
+        return;
+      }
+      const externalLangs = new Set(this.subtitleSources.map((s) => s.language.toLowerCase()));
+      for (const track of Array.from(video.textTracks)) {
+        const tl = (track.language || "").toLowerCase();
+        if (!externalLangs.has(tl)) {
+          continue; // in-manifest track — leave it to hls.js
+        }
+        track.mode = targetLang !== null && tl === targetLang ? "showing" : "disabled";
+      }
     }
 
     private ApplyChrome() {

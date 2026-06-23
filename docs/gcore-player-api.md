@@ -299,12 +299,20 @@ exists for the seekable range (`seekableRange`, `getSeekable`, `getSeekableRange
 `dvrInUse` all absent). These private-field reads are **fragile and unverified
 against a real live/DVR stream**; they may break on a future player update.
 
-**A4 / D4 — Side-loaded subtitles (`AddSubtitleSource`):**
+**A4 / D4 — Side-loaded subtitles (`AddSubtitleSource`): VERIFIED.**
 External subtitle tracks are injected via `playback.externalTracks` at
-construction time with the shape `{ kind: "subtitles", src, label, lang }`.
-Clappr's HTML5 playback wires them via `_setupExternalTracks()`, making them
-appear in `closedCaptionsTracks` alongside any in-manifest tracks so the
-standard `ApplySubtitles` / `SelectTextTrack` path picks them up unchanged. The
-exact field name (`lang` vs `srclang`) and the overall shape are **unverified
-against a real external `.vtt` file**. In-manifest subtitles (no `?sub_lang=`)
-are fully verified (7 tracks on the test stream).
+construction time with the shape `{ kind: "subtitles", src, label, lang }` (the
+`lang` field is correct — verified against a real external `.vtt`). Clappr's
+HTML5 playback wires them via `_setupExternalTracks()`.
+
+**Key finding:** an external track appears **only in the native
+`<video>.textTracks`** — it does **NOT** appear in hls.js
+`closedCaptionsTracks`. So the `setTextTrack(id)` path (which drives in-manifest
+tracks) can never select it. External tracks are selected by setting the native
+`textTrack.mode = "showing"` directly (see `ApplySubtitles` /
+`SetExternalTrackMode`). Verified: with the matching native track set to
+`showing`, its cues load and render (`activeCues` populated at the cue's
+timestamp). Use a language tag **distinct** from the in-manifest ones (e.g.
+`"en-ext"`) so the external track isn't shadowed by an in-manifest track of the
+same language. In-manifest subtitles (no `?sub_lang=`) remain verified (7 tracks
+on the test stream), selected via `setTextTrack`.
