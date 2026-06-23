@@ -11,7 +11,9 @@
 					"properties": {
 						"video-url": "",
 						"video-subtitles": "off",
-						"no-low-latency": false
+						"no-low-latency": false,
+						"enable-chrome": false,
+						"enable-dvr": true
 					},
 					"uid": 486,
 					"sid": 628085384369627,
@@ -22,6 +24,8 @@
 							"properties": {}
 						}
 					},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 35,
 						"y": 316,
@@ -55,6 +59,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 34,
 						"y": 49,
@@ -88,6 +94,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 362,
 						"y": 253,
@@ -133,6 +141,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 144,
 						"y": 737,
@@ -146,8 +156,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -168,6 +178,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 155,
 						"y": 49,
@@ -201,6 +213,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 155,
 						"y": 99,
@@ -234,6 +248,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 34,
 						"y": 99,
@@ -279,6 +295,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 15,
 						"y": 744,
@@ -292,8 +310,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -326,6 +344,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 145,
 						"y": 449,
@@ -339,8 +359,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -361,6 +381,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 34,
 						"y": 151,
@@ -380,7 +402,7 @@
 					"type": "VolumeButton",
 					"properties": {
 						"type": "button",
-						"text": "Volume: 50",
+						"text": "Volume: 50%",
 						"tooltip": "",
 						"initially-visible": true,
 						"enabled": true,
@@ -394,6 +416,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 155,
 						"y": 151,
@@ -427,6 +451,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 34,
 						"y": 198,
@@ -460,6 +486,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 155,
 						"y": 200,
@@ -505,6 +533,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 144,
 						"y": 771,
@@ -518,8 +548,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -552,6 +582,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 144,
 						"y": 806,
@@ -565,8 +597,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -599,6 +631,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 144,
 						"y": 840,
@@ -612,15 +646,15 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
 					"type": "VolumeButton2",
 					"properties": {
 						"type": "button",
-						"text": "Volume: 100",
+						"text": "Volume: 100%",
 						"tooltip": "",
 						"initially-visible": true,
 						"enabled": true,
@@ -634,6 +668,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 270,
 						"y": 151,
@@ -679,6 +715,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 144,
 						"y": 875,
@@ -692,8 +730,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -714,6 +752,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 34,
 						"y": 261,
@@ -747,6 +787,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 155,
 						"y": 261,
@@ -792,6 +834,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 144,
 						"y": 909,
@@ -805,8 +849,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -839,6 +883,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 15,
 						"y": 629,
@@ -852,8 +898,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -886,6 +932,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 15,
 						"y": 663,
@@ -899,8 +947,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -933,6 +981,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 144,
 						"y": 655,
@@ -946,8 +996,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -980,6 +1030,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 144,
 						"y": 621,
@@ -993,8 +1045,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -1027,6 +1079,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 15,
 						"y": 778,
@@ -1040,8 +1094,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -1074,6 +1128,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 15,
 						"y": 813,
@@ -1087,8 +1143,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -1121,6 +1177,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 15,
 						"y": 847,
@@ -1134,8 +1192,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -1168,6 +1226,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 15,
 						"y": 881,
@@ -1181,8 +1241,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -1215,6 +1275,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 15,
 						"y": 915,
@@ -1228,8 +1290,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -1254,6 +1316,8 @@
 						"sid": 752216075973128,
 						"expanded": true
 					},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 413,
 						"y": 95,
@@ -1299,6 +1363,8 @@
 					"tags": "",
 					"instanceVariables": {},
 					"behaviors": {},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 15,
 						"y": 701,
@@ -1312,8 +1378,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -1350,6 +1416,8 @@
 						"sid": 426049499947347,
 						"expanded": true
 					},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 158,
 						"y": 700,
@@ -1363,8 +1431,8 @@
 							1,
 							1
 						],
-						"angle": 0,
-						"zElevation": 0
+						"z": 0,
+						"angle": 0
 					}
 				},
 				{
@@ -1389,6 +1457,8 @@
 						"sid": 505558328308942,
 						"expanded": true
 					},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 642,
 						"y": 94,
@@ -1426,6 +1496,8 @@
 						"sid": 892768413877261,
 						"expanded": true
 					},
+					"showing": true,
+					"locked": false,
 					"world": {
 						"x": 414,
 						"y": 44,
@@ -1460,6 +1532,7 @@
 				1
 			],
 			"isTransparent": false,
+			"sampling": "auto",
 			"parallaxX": 1,
 			"parallaxY": 1,
 			"scaleRate": 1,
@@ -1482,6 +1555,7 @@
 	"width": 960,
 	"height": 1708,
 	"unboundedScrolling": false,
+	"sampling": "auto",
 	"vpX": 0.5,
 	"vpY": 0.5,
 	"projection": "perspective",

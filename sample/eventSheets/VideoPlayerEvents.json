@@ -265,9 +265,9 @@
 						{
 							"id": "set-playback-time",
 							"objectClass": "VideoPlayer",
-							"sid": 721744153602868,
+							"sid": 484427954449892,
 							"parameters": {
-								"playback-time": "100"
+								"playback-time": "1"
 							}
 						}
 					],
@@ -286,9 +286,9 @@
 						{
 							"id": "set-volume",
 							"objectClass": "VideoPlayer",
-							"sid": 330329780513761,
+							"sid": 687000869334731,
 							"parameters": {
-								"level": "50"
+								"level": "0.5"
 							}
 						}
 					],
@@ -307,9 +307,9 @@
 						{
 							"id": "set-volume",
 							"objectClass": "VideoPlayer",
-							"sid": 811512415488942,
+							"sid": 433282878908213,
 							"parameters": {
-								"level": "100"
+								"level": "1"
 							}
 						}
 					],
