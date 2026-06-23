@@ -220,33 +220,21 @@
 							}
 						},
 						{
-							"type": "script",
-							"language": "typescript",
-							"script": [
-								"const url = new URL(globalThis.location.href);",
-								"const path = await runtime.assets.getProjectFileUrl(\"01_ARGUS_FR.vtt\");",
-								"const paths = url.pathname.split('/');",
-								"paths.pop();",
-								"paths.push(path);",
-								"url.pathname = paths.join('/');",
-								"localVars.subtitleUrl = url.href;",
-								"console.info(`Loading ${localVars.subtitleUrl}`);"
-							]
+							"id": "add-project-subtitle-source",
+							"objectClass": "VideoPlayer",
+							"sid": 203018466277476,
+							"parameters": {
+								"file": {
+									"path": "01_ARGUS_FR.vtt"
+								},
+								"language": "\"fr\"",
+								"label": "\"French (ext)\""
+							}
 						},
 						{
 							"id": "wait-for-previous-actions",
 							"objectClass": "System",
-							"sid": 717396756970159
-						},
-						{
-							"id": "add-subtitle-source",
-							"objectClass": "VideoPlayer",
-							"sid": 480362985109834,
-							"parameters": {
-								"url": "subtitleUrl",
-								"language": "\"fr-ext\"",
-								"label": "\"French (ext)\""
-							}
+							"sid": 119138804542107
 						},
 						{
 							"callFunction": "UpdateURLUI",
@@ -398,16 +386,78 @@
 					"eventType": "block",
 					"conditions": [
 						{
+							"id": "for-each",
+							"objectClass": "System",
+							"sid": 798292373625503,
+							"parameters": {
+								"object": "SubtitleButton"
+							}
+						}
+					],
+					"actions": [],
+					"sid": 165154468298557,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "has-subtitle-language",
+									"objectClass": "VideoPlayer",
+									"sid": 476640420114553,
+									"parameters": {
+										"lang": "SubtitleButton.lang"
+									}
+								}
+							],
+							"actions": [
+								{
+									"id": "set-enabled",
+									"objectClass": "SubtitleButton",
+									"sid": 955742329447127,
+									"parameters": {
+										"mode": "enabled"
+									}
+								}
+							],
+							"sid": 770047318837630
+						},
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "else",
+									"objectClass": "System",
+									"sid": 281275041917930
+								}
+							],
+							"actions": [
+								{
+									"id": "set-enabled",
+									"objectClass": "SubtitleButton",
+									"sid": 790221843330877,
+									"parameters": {
+										"mode": "disabled"
+									}
+								}
+							],
+							"sid": 993184419283086
+						}
+					]
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
 							"id": "on-clicked",
 							"objectClass": "SubtitleButton",
 							"sid": 936820827566704
 						},
 						{
-							"id": "has-tags",
-							"objectClass": "SubtitleButton",
-							"sid": 243220497960498,
+							"id": "has-subtitle-language",
+							"objectClass": "VideoPlayer",
+							"sid": 362812108551977,
 							"parameters": {
-								"tags": "\"english\""
+								"lang": "SubtitleButton.lang"
 							}
 						}
 					],
@@ -415,9 +465,9 @@
 						{
 							"id": "set-subtitles",
 							"objectClass": "VideoPlayer",
-							"sid": 572800558124100,
+							"sid": 407266163858128,
 							"parameters": {
-								"language": "\"en\""
+								"language": "SubtitleButton.lang"
 							}
 						},
 						{
@@ -505,15 +555,20 @@
 							"parameters": {
 								"tags": "\"french\""
 							}
+						},
+						{
+							"id": "has-subtitles",
+							"objectClass": "VideoPlayer",
+							"sid": 811773227538178
 						}
 					],
 					"actions": [
 						{
 							"id": "set-subtitles",
 							"objectClass": "VideoPlayer",
-							"sid": 114065719669772,
+							"sid": 227474351471246,
 							"parameters": {
-								"language": "\"fr-ext\""
+								"language": "\"fr\""
 							}
 						},
 						{

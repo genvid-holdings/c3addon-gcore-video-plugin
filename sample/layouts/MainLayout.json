@@ -12,7 +12,7 @@
 						"video-url": "",
 						"video-subtitles": "off",
 						"no-low-latency": false,
-						"enable-chrome": false,
+						"enable-chrome": true,
 						"enable-dvr": true
 					},
 					"uid": 486,
@@ -97,8 +97,8 @@
 					"showing": true,
 					"locked": false,
 					"world": {
-						"x": 362,
-						"y": 253,
+						"x": 403,
+						"y": 260,
 						"width": 108,
 						"height": 41,
 						"originX": 0,
@@ -735,7 +735,7 @@
 					}
 				},
 				{
-					"type": "EnglishButton",
+					"type": "SubtitleButton",
 					"properties": {
 						"type": "button",
 						"text": "EN Sub",
@@ -749,8 +749,10 @@
 					},
 					"uid": 24,
 					"sid": 701153405895499,
-					"tags": "",
-					"instanceVariables": {},
+					"tags": "english",
+					"instanceVariables": {
+						"lang": "en"
+					},
 					"behaviors": {},
 					"showing": true,
 					"locked": false,
@@ -790,8 +792,8 @@
 					"showing": true,
 					"locked": false,
 					"world": {
-						"x": 155,
-						"y": 261,
+						"x": 281,
+						"y": 259,
 						"width": 108,
 						"height": 41,
 						"originX": 0,
@@ -1503,6 +1505,43 @@
 						"y": 44,
 						"width": 145,
 						"height": 40,
+						"originX": 0,
+						"originY": 0,
+						"color": [
+							1,
+							1,
+							1,
+							1
+						]
+					}
+				},
+				{
+					"type": "SubtitleButton",
+					"properties": {
+						"type": "button",
+						"text": "FR Sub",
+						"tooltip": "",
+						"initially-visible": true,
+						"enabled": true,
+						"auto-font-size": true,
+						"checked": false,
+						"id": "",
+						"class": ""
+					},
+					"uid": 38,
+					"sid": 642914743528347,
+					"tags": "french",
+					"instanceVariables": {
+						"lang": "fr"
+					},
+					"behaviors": {},
+					"showing": true,
+					"locked": false,
+					"world": {
+						"x": 157,
+						"y": 260,
+						"width": 108,
+						"height": 41,
 						"originX": 0,
 						"originY": 0,
 						"color": [

@@ -66,7 +66,7 @@
 			"DurationText",
 			"VolumeButton2",
 			"VolumeText",
-			"EnglishButton",
+			"SubtitleButton",
 			"NoSubButton",
 			"GCoreVideoPlugin",
 			"ErrorText",
@@ -183,7 +183,16 @@
 			"subfolders": []
 		},
 		"general": {
-			"items": [],
+			"items": [
+				{
+					"name": "01_ARGUS_FR.vtt",
+					"type": "application/octet-stream",
+					"sid": 533785233283248,
+					"file-info": {
+						"purpose": "none"
+					}
+				}
+			],
 			"subfolders": []
 		}
 	},
