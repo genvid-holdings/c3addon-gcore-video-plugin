@@ -245,7 +245,8 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 		if (subtitles === "") {
 			subtitles = this._subtitles;
 		}
-		if (this._url === url && this._subtitles === subtitles && this._noLowLatency === noLowLatency) {
+		const urlChanged = this._url !== url;
+		if (!urlChanged && this._subtitles === subtitles && this._noLowLatency === noLowLatency) {
 			return;
 		}
 
@@ -256,6 +257,13 @@ class GCoreVideoInstance extends globalThis.ISDKDOMInstanceBase {
 		this._url = url;
 		this._subtitles = subtitles;
 		this._noLowLatency = noLowLatency;
+		if (urlChanged) {
+			// Side-loaded subtitle sources belong to a specific video; clear them
+			// when the video changes so the previous video's external subtitles
+			// don't leak onto the new one. (Add sources via AddSubtitleSource
+			// AFTER setting the URL.)
+			this._subtitleSources = [];
+		}
 		this._updateElementState();
 	}
 
