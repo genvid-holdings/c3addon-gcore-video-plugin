@@ -27,9 +27,11 @@
 		OnSetVolume(e: JSONObject): void;
 		OnSetQuality(e: JSONObject): void;
 		OnResize(): void;
-		UpdateState(e: JSONObject): void;
-		Destroy(): void;
+		// Returns whether a rebuild load was kicked off (a Ready will eventually
+		// fire) — used by OnLoadVideo to decide whether to await readiness.
+		UpdateState(e: JSONObject): boolean;
 		OnLoadVideo(e: JSONObject): Promise<JSONValue>;
+		Destroy(): void;
 	};
 
 	interface IElementHandlerMap {
